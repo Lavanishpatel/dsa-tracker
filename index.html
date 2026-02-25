@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Pattern Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --surface3: #22222e;
+    --border: #2a2a3a;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --accent4: #f7971e;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --easy: #43e97b;
+    --medium: #f7971e;
+    --hard: #ff6584;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG grid */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; }
+  .logo-box {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    color: white;
+  }
+  .logo-text { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo-text span { color: var(--accent); }
+
+  .nav-stats { display: flex; align-items: center; gap: 16px; }
+  .stat-chip {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px; font-weight: 700;
+  }
+  .stat-chip .num { color: var(--accent); }
+  .streak-chip .num { color: var(--accent4); }
+  .fire { font-size: 16px; }
+
+  .theme-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    cursor: pointer; color: var(--text2); display: grid; place-items: center;
+    transition: all .2s;
+  }
+  .theme-btn:hover { background: var(--surface3); color: var(--text); }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    min-height: calc(100vh - 64px);
+    gap: 0;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky; top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    color: var(--text3); padding: 0 20px 12px;
+    text-transform: uppercase;
+  }
+
+  .pattern-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+    position: relative;
+  }
+  .pattern-nav-item:hover { background: var(--surface2); }
+  .pattern-nav-item.active {
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+  .pni-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+    opacity: 0.4;
+  }
+  .pattern-nav-item.active .pni-dot { opacity: 1; }
+  .pni-name { font-size: 13px; font-weight: 600; flex: 1; }
+  .pni-count { font-size: 11px; color: var(--text3); font-family: 'Space Mono', monospace; }
+  .pni-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: var(--border);
+  }
+  .pni-fill {
+    height: 100%; background: var(--accent3);
+    transition: width .5s ease;
+  }
+
+  /* MAIN */
+  .main {
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  /* HERO PROGRESS */
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    margin-bottom: 24px;
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: '{ }';
+    position: absolute; right: 24px; top: 50%; transform: translateY(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 80px; font-weight: 700;
+    color: rgba(108,99,255,0.08);
+    pointer-events: none;
+  }
+  .hero-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .hero-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+  .hero-numbers {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 20px;
+  }
+  .hero-num {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    padding: 14px;
+  }
+  .hero-num-val {
+    font-size: 28px; font-weight: 800;
+    font-family: 'Space Mono', monospace;
+  }
+  .hero-num-val.solved { color: var(--accent3); }
+  .hero-num-val.streak { color: var(--accent4); }
+  .hero-num-val.hard { color: var(--accent2); }
+  .hero-num-val.patterns { color: var(--accent); }
+  .hero-num-label { font-size: 11px; color: var(--text3); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .big-bar {
+    height: 10px; border-radius: 5px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  .big-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 5px;
+    transition: width 1s ease;
+  }
+  .big-bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text3);
+    margin-top: 8px;
+  }
+
+  /* DAILY ACTIVITY */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-title { font-size: 16px; font-weight: 800; }
+  .section-sub { font-size: 12px; color: var(--text3); }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(26, 1fr);
+    gap: 3px;
+    margin-bottom: 24px;
+  }
+  .cal-cell {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: var(--surface3);
+    cursor: pointer;
+    transition: transform .1s;
+    position: relative;
+  }
+  .cal-cell:hover { transform: scale(1.3); z-index: 2; }
+  .cal-cell.lvl-1 { background: rgba(108,99,255,0.3); }
+  .cal-cell.lvl-2 { background: rgba(108,99,255,0.55); }
+  .cal-cell.lvl-3 { background: rgba(108,99,255,0.8); }
+  .cal-cell.lvl-4 { background: var(--accent); }
+  .cal-cell.today { box-shadow: 0 0 0 2px var(--accent2); }
+
+  /* PATTERN CARDS */
+  .pattern-section {
+    margin-bottom: 32px;
+    scroll-margin-top: 80px;
+  }
+  .pattern-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .pattern-header:hover { background: var(--surface3); }
+  .pattern-num {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--accent);
+    display: grid; place-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: white; flex-shrink: 0;
+  }
+  .pattern-name { font-size: 15px; font-weight: 800; flex: 1; }
+  .pattern-progress-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: var(--text3);
+  }
+  .pattern-chevron {
+    font-size: 12px; color: var(--text3);
+    transition: transform .2s;
+  }
+  .pattern-header.open .pattern-chevron { transform: rotate(180deg); }
+
+  .pattern-body {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+  }
+  .pattern-mini-bar {
+    height: 3px;
+    background: var(--surface3);
+  }
+  .pattern-mini-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    transition: width .5s ease;
+  }
+
+  .question-row {
+    display: grid;
+    grid-template-columns: 40px 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background .1s;
+  }
+  .question-row:last-child { border-bottom: none; }
+  .question-row:hover { background: rgba(108,99,255,0.04); }
+
+  .q-check {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 2px solid var(--border);
+    cursor: pointer; display: grid; place-items: center;
+    transition: all .2s; flex-shrink: 0;
+    background: transparent;
+  }
+  .q-check:hover { border-color: var(--accent3); }
+  .q-check.done {
+    background: var(--accent3); border-color: var(--accent3);
+  }
+  .q-check.done::after {
+    content: '✓';
+    color: #0a0a0f; font-size: 13px; font-weight: 800;
+  }
+  .q-check.revisit { border-color: var(--accent4); }
+  .q-check.revisit::after { content: '↻'; color: var(--accent4); font-size: 14px; }
+
+  .q-name { font-size: 13px; font-weight: 600; }
+  .q-name.done { text-decoration: line-through; color: var(--text3); }
+
+  .q-diff {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 12px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .q-diff.easy { background: rgba(67,233,123,0.15); color: var(--easy); }
+  .q-diff.medium { background: rgba(247,151,30,0.15); color: var(--medium); }
+  .q-diff.hard { background: rgba(255,101,132,0.15); color: var(--hard); }
+
+  .q-links { display: flex; gap: 6px; flex-shrink: 0; }
+  .q-link {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 6px;
+    text-decoration: none; font-size: 11px; font-weight: 700;
+    transition: all .15s; border: 1px solid transparent;
+  }
+  .q-link.lc { background: rgba(255,161,22,0.15); color: #ffa116; border-color: rgba(255,161,22,0.2); }
+  .q-link.lc:hover { background: rgba(255,161,22,0.25); }
+  .q-link.gfg { background: rgba(23,213,92,0.12); color: #17d55c; border-color: rgba(23,213,92,0.2); }
+  .q-link.gfg:hover { background: rgba(23,213,92,0.22); }
+  .q-link.yt { background: rgba(255,0,0,0.12); color: #ff4444; border-color: rgba(255,0,0,0.2); }
+  .q-link.yt:hover { background: rgba(255,0,0,0.22); }
+
+  /* RIGHT SIDEBAR */
+  .right-sidebar {
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    padding: 20px;
+    position: sticky; top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  .right-sidebar::-webkit-scrollbar { width: 4px; }
+  .right-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .widget {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .widget-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: var(--text3); text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* Today's picks */
+  .daily-q {
+    padding: 10px 12px;
+    background: var(--surface3);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: border-color .15s;
+  }
+  .daily-q:hover { border-color: var(--accent); }
+  .daily-q-name { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .daily-q-meta { display: flex; align-items: center; gap: 6px; }
+  .daily-q-pattern { font-size: 10px; color: var(--text3); }
+
+  /* Achievements */
+  .achievement {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid transparent;
+    transition: all .2s;
+    opacity: 0.4;
+  }
+  .achievement.unlocked { opacity: 1; border-color: rgba(108,99,255,0.3); background: rgba(108,99,255,0.05); }
+  .ach-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: grid; place-items: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .ach-name { font-size: 12px; font-weight: 700; }
+  .ach-desc { font-size: 10px; color: var(--text3); }
+
+  /* Difficulty breakdown */
+  .diff-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .diff-label { font-size: 11px; font-weight: 700; width: 50px; }
+  .diff-bar { flex: 1; height: 6px; border-radius: 3px; background: var(--surface3); overflow: hidden; }
+  .diff-fill { height: 100%; border-radius: 3px; }
+  .diff-count { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text3); width: 30px; text-align: right; }
+
+  /* Search */
+  .search-wrap { position: relative; margin-bottom: 20px; }
+  .search-input {
+    width: 100%; padding: 10px 16px 10px 38px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text); font-family: 'Syne', sans-serif;
+    font-size: 13px; outline: none;
+    transition: border-color .2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); }
+
+  /* Filters */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-btn {
+    padding: 5px 12px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text2);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+    font-family: 'Syne', sans-serif;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    place-items: center;
+  }
+  .modal-overlay.show { display: grid; }
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    width: 90%; max-width: 500px;
+    animation: modalIn .2s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } }
+  .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+  .modal-status { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .status-btn {
+    padding: 6px 14px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text2);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+    font-family: 'Syne', sans-serif;
+  }
+  .status-btn.active-status { background: var(--accent); border-color: var(--accent); color: white; }
+  .modal-notes {
+    width: 100%; padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text); font-family: 'Syne', sans-serif;
+    font-size: 13px; outline: none; resize: vertical;
+    min-height: 80px; margin-bottom: 16px;
+  }
+  .modal-notes:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn {
+    padding: 8px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+    font-family: 'Syne', sans-serif;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--accent); color: white; border: none; }
+  .btn-primary:hover { background: #5a52e0; }
+  .btn-secondary { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--text2); color: var(--text); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 2000;
+    background: var(--surface2); border: 1px solid var(--accent);
+    border-radius: var(--radius); padding: 12px 20px;
+    font-size: 13px; font-weight: 600;
+    transform: translateY(20px); opacity: 0;
+    transition: all .3s ease;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Hidden */
+  .hidden { display: none !important; }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 220px 1fr; }
+    .right-sidebar { display: none; }
+  }
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .hero-numbers { grid-template-columns: repeat(2, 1fr); }
+    nav { padding: 0 16px; }
+    .main { padding: 16px; }
+    .nav-stats .stat-chip:not(.streak-chip) { display: none; }
+  }
+
+  /* ======= MOTIVATION QUOTE ======= */
+  .quote-banner {
+    background: linear-gradient(135deg, rgba(108,99,255,0.12), rgba(255,101,132,0.08));
+    border: 1px solid rgba(108,99,255,0.25);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .quote-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .quote-text { font-size: 13px; font-style: italic; color: var(--text2); line-height: 1.6; flex: 1; }
+  .quote-author { font-size: 11px; color: var(--text3); margin-top: 4px; font-style: normal; font-weight: 700; }
+
+  /* ======= WEEKLY STREAK TRACKER ======= */
+  .week-streak-row {
+    display: flex; gap: 6px; align-items: center;
+    justify-content: center; margin-bottom: 10px;
+  }
+  .week-day-cell {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+  }
+  .week-day-label { font-size: 9px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .week-day-dot {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 2px solid var(--border);
+    display: grid; place-items: center;
+    font-size: 14px; transition: all .2s;
+  }
+  .week-day-dot.active { background: var(--accent3); border-color: var(--accent3); box-shadow: 0 0 12px rgba(67,233,123,0.4); }
+  .week-day-dot.today-dot { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(108,99,255,0.3); }
+  .week-day-dot.missed { background: rgba(255,101,132,0.1); border-color: rgba(255,101,132,0.3); }
+
+  /* ======= FULL MONTH CALENDAR ======= */
+  .month-calendar-wrap {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .month-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .month-nav-btn {
+    background: var(--surface3); border: 1px solid var(--border);
+    border-radius: 6px; padding: 5px 10px;
+    color: var(--text2); cursor: pointer;
+    font-size: 13px; transition: all .15s;
+    font-family: 'Syne', sans-serif;
+  }
+  .month-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .month-title { font-size: 14px; font-weight: 800; }
+  .month-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .month-day-header {
+    text-align: center; font-size: 9px; font-weight: 700;
+    color: var(--text3); text-transform: uppercase;
+    padding: 4px 0; letter-spacing: 1px;
+  }
+  .month-day {
+    aspect-ratio: 1; border-radius: 6px;
+    background: var(--surface3);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+    border: 1px solid transparent;
+    position: relative;
+  }
+  .month-day:hover { border-color: var(--accent); }
+  .month-day.empty { background: transparent; cursor: default; }
+  .month-day.has-activity { background: rgba(108,99,255,0.2); }
+  .month-day.has-activity-high { background: rgba(108,99,255,0.5); }
+  .month-day.today-cal { border-color: var(--accent2) !important; box-shadow: 0 0 0 1px var(--accent2); color: var(--accent2); }
+  .month-day.future { opacity: 0.3; cursor: default; }
+  .month-day-count {
+    font-size: 8px; color: var(--accent3);
+    font-family: 'Space Mono', monospace;
+    line-height: 1;
+  }
+
+  /* ======= DAY DETAIL MODAL ======= */
+  .day-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(10px);
+    place-items: center;
+  }
+  .day-modal-overlay.show { display: grid; }
+  .day-modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    width: 90%; max-width: 560px;
+    max-height: 80vh; overflow-y: auto;
+    animation: modalIn .2s ease;
+  }
+  .day-modal-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+  .day-modal-sub { font-size: 12px; color: var(--text3); margin-bottom: 18px; }
+  .day-solved-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .day-solved-check { font-size: 16px; }
+  .day-solved-name { font-size: 13px; font-weight: 600; flex: 1; }
+  .day-solved-pattern { font-size: 10px; color: var(--text3); }
+
+  /* ======= WEEKLY PROGRESS WIDGET ======= */
+  .week-bars { display: flex; gap: 6px; align-items: flex-end; height: 60px; margin-bottom: 8px; }
+  .week-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .week-bar-fill {
+    width: 100%; border-radius: 4px 4px 0 0;
+    background: var(--accent);
+    min-height: 2px;
+    transition: height .5s ease;
+    position: relative;
+  }
+  .week-bar-fill.today-bar { background: var(--accent3); }
+  .week-bar-label { font-size: 9px; color: var(--text3); font-weight: 700; }
+  .week-bar-count { font-size: 9px; color: var(--text2); font-family: 'Space Mono', monospace; }
+
+  /* ======= MONTHLY PROGRESS ======= */
+  .monthly-ring-wrap {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 10px;
+  }
+  .ring-svg { flex-shrink: 0; }
+  .ring-info-title { font-size: 18px; font-weight: 800; }
+  .ring-info-sub { font-size: 11px; color: var(--text3); }
+  .monthly-goal-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .monthly-goal-label { font-size: 11px; color: var(--text2); flex: 1; }
+  .monthly-goal-val { font-size: 12px; font-weight: 700; font-family: 'Space Mono', monospace; }
+
+  /* ======= ROADMAP CHEATSHEET ======= */
+  .roadmap-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .roadmap-header {
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; transition: background .15s;
+    border-bottom: 1px solid var(--border);
+  }
+  .roadmap-header:hover { background: var(--surface3); }
+  .roadmap-phase-badge {
+    padding: 3px 10px; border-radius: 12px;
+    font-size: 10px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .roadmap-title { font-size: 13px; font-weight: 700; flex: 1; }
+  .roadmap-body { padding: 14px 16px; }
+  .roadmap-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .roadmap-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .roadmap-week { font-size: 10px; font-weight: 700; color: var(--text3); min-width: 50px; padding-top: 2px; }
+  .roadmap-patterns-list { font-size: 12px; color: var(--text2); line-height: 1.7; }
+  .roadmap-patterns-list strong { color: var(--text); font-weight: 700; }
+
+  /* ======= PROGRESS TABS ======= */
+  .progress-tabs {
+    display: flex; gap: 0; margin-bottom: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
+  }
+  .progress-tab {
+    flex: 1; padding: 8px 12px; border-radius: 7px;
+    background: transparent; border: none;
+    color: var(--text3); font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+    font-family: 'Syne', sans-serif; text-align: center;
+  }
+  .progress-tab.active { background: var(--accent); color: white; }
+  .progress-panel { display: none; }
+  .progress-panel.active { display: block; }
+
+  /* CHECKLIST */
+  .checklist-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px; margin-bottom: 6px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+  }
+  .checklist-cb {
+    width: 18px; height: 18px; border-radius: 4px;
+    border: 2px solid var(--border);
+    cursor: pointer; display: grid; place-items: center;
+    flex-shrink: 0; transition: all .15s;
+  }
+  .checklist-cb.checked { background: var(--accent3); border-color: var(--accent3); }
+  .checklist-cb.checked::after { content: '✓'; color: #0a0a0f; font-size: 11px; font-weight: 800; }
+  .checklist-label { font-size: 12px; font-weight: 600; flex: 1; }
+  .checklist-label.done-label { text-decoration: line-through; color: var(--text3); }
+  .checklist-tag { font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">
+      <div class="logo-box">DS</div>
+      <span class="logo-text">DSA <span>Tracker</span></span>
+    </div>
+    <div class="nav-stats">
+      <div class="stat-chip streak-chip">
+        <span class="fire">🔥</span>
+        <span class="num" id="navStreak">0</span>
+        <span style="font-size:11px;color:var(--text3);">streak</span>
+      </div>
+      <div class="stat-chip">
+        <span class="num" id="navSolved">0</span>
+        <span style="font-size:11px;color:var(--text3);">/ <span id="navTotal">0</span></span>
+      </div>
+    </div>
+    <button class="theme-btn" id="themeBtn" title="Toggle theme">☀️</button>
+  </nav>
+
+  <div class="layout">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar" id="leftSidebar">
+      <div class="sidebar-title">Patterns</div>
+      <div id="patternNav"></div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-title">DSA Pattern Master 🚀</div>
+        <div class="hero-sub">Track your progress • Build streaks • Conquer patterns</div>
+        <div class="hero-numbers">
+          <div class="hero-num">
+            <div class="hero-num-val solved" id="heroSolved">0</div>
+            <div class="hero-num-label">Solved</div>
+          </div>
+          <div class="hero-num">
+            <div class="hero-num-val streak" id="heroStreak">0</div>
+            <div class="hero-num-label">Day Streak</div>
+          </div>
+          <div class="hero-num">
+            <div class="hero-num-val hard" id="heroHard">0</div>
+            <div class="hero-num-label">Hard Solved</div>
+          </div>
+          <div class="hero-num">
+            <div class="hero-num-val patterns" id="heroPatterns">0</div>
+            <div class="hero-num-label">Patterns Done</div>
+          </div>
+        </div>
+        <div class="big-bar">
+          <div class="big-fill" id="heroBigFill" style="width:0%"></div>
+        </div>
+        <div class="big-bar-label">
+          <span>0% complete</span>
+          <span id="heroBarLabel">0 / 0 problems</span>
+        </div>
+      </div>
+
+      <!-- Motivation Quote -->
+      <div class="quote-banner" id="quoteBanner">
+        <div class="quote-icon">💡</div>
+        <div>
+          <div class="quote-text" id="quoteText">Loading inspiration...</div>
+          <div class="quote-author" id="quoteAuthor"></div>
+        </div>
+      </div>
+
+      <!-- Progress Tabs: Daily / Weekly / Monthly -->
+      <div class="section-header" style="margin-bottom:12px;">
+        <div><div class="section-title">📈 Progress Dashboard</div></div>
+      </div>
+      <div class="progress-tabs">
+        <button class="progress-tab active" onclick="switchTab('daily',this)">📅 Daily</button>
+        <button class="progress-tab" onclick="switchTab('weekly',this)">📆 Weekly</button>
+        <button class="progress-tab" onclick="switchTab('monthly',this)">🗓️ Monthly</button>
+        <button class="progress-tab" onclick="switchTab('roadmap',this)">🗺️ Roadmap</button>
+        <button class="progress-tab" onclick="switchTab('checklist',this)">✅ Checklist</button>
+      </div>
+
+      <!-- DAILY PANEL -->
+      <div class="progress-panel active" id="panel-daily">
+        <!-- Activity heatmap -->
+        <div class="section-header" style="margin-bottom:10px;">
+          <div><div class="section-title" style="font-size:14px;">Activity Heatmap</div><div class="section-sub">Last 6 months — click a day to see what you solved</div></div>
+        </div>
+        <div class="calendar-grid" id="calGrid" style="margin-bottom:20px;"></div>
+
+        <!-- Weekly streak dots -->
+        <div class="section-header" style="margin-bottom:10px;">
+          <div><div class="section-title" style="font-size:14px;">This Week</div><div class="section-sub" id="weekStreakSub">0 / 7 days active</div></div>
+        </div>
+        <div class="week-streak-row" id="weekDots"></div>
+      </div>
+
+      <!-- WEEKLY PANEL -->
+      <div class="progress-panel" id="panel-weekly">
+        <div class="section-header" style="margin-bottom:10px;">
+          <div><div class="section-title" style="font-size:14px;">Problems Solved Per Day (Last 7 Days)</div></div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;">
+          <div class="week-bars" id="weekBars"></div>
+          <div style="display:flex;gap:6px;" id="weekBarLabels"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+          <div class="hero-num">
+            <div class="hero-num-val solved" id="weekTotal">0</div>
+            <div class="hero-num-label">This Week</div>
+          </div>
+          <div class="hero-num">
+            <div class="hero-num-val streak" id="weekBest">0</div>
+            <div class="hero-num-label">Best Day</div>
+          </div>
+          <div class="hero-num">
+            <div class="hero-num-val patterns" id="weekAvg">0</div>
+            <div class="hero-num-label">Daily Avg</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MONTHLY PANEL -->
+      <div class="progress-panel" id="panel-monthly">
+        <!-- Full month calendar -->
+        <div class="month-calendar-wrap">
+          <div class="month-nav">
+            <button class="month-nav-btn" onclick="changeMonth(-1)">◀ Prev</button>
+            <span class="month-title" id="monthTitle"></span>
+            <button class="month-nav-btn" onclick="changeMonth(1)">Next ▶</button>
+          </div>
+          <div class="month-grid" id="monthGrid"></div>
+        </div>
+        <!-- Monthly stats -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div class="hero-num">
+            <div class="hero-num-val solved" id="monthSolved">0</div>
+            <div class="hero-num-label">This Month</div>
+          </div>
+          <div class="hero-num">
+            <div class="hero-num-val streak" id="monthActiveDays">0</div>
+            <div class="hero-num-label">Active Days</div>
+          </div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;">
+          <div class="widget-title">Monthly Goals</div>
+          <div class="monthly-goal-row">
+            <span class="monthly-goal-label">🎯 Problems Target (30)</span>
+            <span class="monthly-goal-val" id="monthGoalPct">0%</span>
+          </div>
+          <div style="height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;margin-bottom:10px;">
+            <div id="monthGoalBar" style="height:100%;border-radius:3px;background:var(--accent3);transition:width .5s;width:0%"></div>
+          </div>
+          <div class="monthly-goal-row">
+            <span class="monthly-goal-label">🔥 Streak Goal (20 days)</span>
+            <span class="monthly-goal-val" id="monthStreakGoalPct">0%</span>
+          </div>
+          <div style="height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;">
+            <div id="monthStreakBar" style="height:100%;border-radius:3px;background:var(--accent4);transition:width .5s;width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROADMAP PANEL -->
+      <div class="progress-panel" id="panel-roadmap">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);">
+          🗺️ Structured 12-week DSA roadmap — master patterns in the right order to maximize your interview readiness.
+        </div>
+
+        <div class="roadmap-section">
+          <div class="roadmap-header" onclick="toggleRoadmap('phase1',this)">
+            <span class="roadmap-phase-badge" style="background:rgba(67,233,123,0.15);color:var(--easy)">Phase 1</span>
+            <span class="roadmap-title">Foundations (Weeks 1–3)</span>
+            <span style="font-size:11px;color:var(--text3);">▼</span>
+          </div>
+          <div class="roadmap-body" id="roadmap-phase1">
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 1</span>
+              <div class="roadmap-patterns-list"><strong>Arrays & Two Pointers</strong><br>Pair with Target Sum, Remove Duplicates, Dutch National Flag, Triplet Sum. Focus on understanding pointer movement and in-place operations.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 2</span>
+              <div class="roadmap-patterns-list"><strong>Sliding Window + Kadane's</strong><br>Max Sum Subarray, Longest Substring, Minimum Window Substring. Master variable window sizing and Kadane's pattern for contiguous subarrays.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 3</span>
+              <div class="roadmap-patterns-list"><strong>Prefix Sum + Hashing</strong><br>Subarray Sum Equals K, Contiguous Array, Ransom Note. Learn how prefix sums eliminate nested loops and how hash maps give O(1) lookups.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-section">
+          <div class="roadmap-header" onclick="toggleRoadmap('phase2',this)">
+            <span class="roadmap-phase-badge" style="background:rgba(247,151,30,0.15);color:var(--medium)">Phase 2</span>
+            <span class="roadmap-title">Core Patterns (Weeks 4–7)</span>
+            <span style="font-size:11px;color:var(--text3);">▼</span>
+          </div>
+          <div class="roadmap-body" id="roadmap-phase2">
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 4</span>
+              <div class="roadmap-patterns-list"><strong>Binary Search</strong><br>Basic → Upper Bound → Search in Rotated Array → Koko Bananas. Learn to apply binary search on answers, not just arrays.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 5</span>
+              <div class="roadmap-patterns-list"><strong>Fast & Slow Pointers + LinkedList Reversal</strong><br>Cycle detection, Middle of List, Reverse LinkedList, K-group reversal. Essential for all linked list interviews.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 6</span>
+              <div class="roadmap-patterns-list"><strong>Stack + Cyclic Sort</strong><br>Monotonic stacks for Next Greater Element, Valid Parentheses, Missing Number patterns. Quick wins in easy/medium problems.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 7</span>
+              <div class="roadmap-patterns-list"><strong>Heap / Priority Queue</strong><br>Kth Largest, Top K Elements, Task Scheduler, Median from Stream. Two-heap pattern is critical for hard problems.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-section">
+          <div class="roadmap-header" onclick="toggleRoadmap('phase3',this)">
+            <span class="roadmap-phase-badge" style="background:rgba(255,101,132,0.15);color:var(--hard)">Phase 3</span>
+            <span class="roadmap-title">Advanced Patterns (Weeks 8–12)</span>
+            <span style="font-size:11px;color:var(--text3);">▼</span>
+          </div>
+          <div class="roadmap-body" id="roadmap-phase3">
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 8</span>
+              <div class="roadmap-patterns-list"><strong>Recursion & Backtracking</strong><br>Permutations, Subsets, Combination Sum, Palindrome Partitioning. Learn the recursion tree mental model.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 9</span>
+              <div class="roadmap-patterns-list"><strong>Graphs: BFS/DFS + Islands</strong><br>Number of Islands, Flood Fill, Surrounded Regions. BFS for shortest path, DFS for connected components.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 10</span>
+              <div class="roadmap-patterns-list"><strong>Dynamic Programming (0/1 Knapsack)</strong><br>Subset Sum, Partition Equal Subset, Target Sum. Master the DP transition from recursion → memoization → tabulation.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 11</span>
+              <div class="roadmap-patterns-list"><strong>Topological Sort + Union Find</strong><br>Course Schedule, Alien Dictionary, Redundant Connection, Number of Provinces. Graph interview essentials.</div>
+            </div>
+            <div class="roadmap-item">
+              <span class="roadmap-week">Week 12</span>
+              <div class="roadmap-patterns-list"><strong>Trie + Greedy + Ordered Set</strong><br>Implement Trie, Search Suggestions, Task Scheduler, 132 Pattern. Final review and mock interviews.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECKLIST PANEL -->
+      <div class="progress-panel" id="panel-checklist">
+        <div class="progress-tabs" style="margin-bottom:16px;">
+          <button class="progress-tab active" onclick="switchChecklist('daily-cl',this)">Today</button>
+          <button class="progress-tab" onclick="switchChecklist('weekly-cl',this)">This Week</button>
+          <button class="progress-tab" onclick="switchChecklist('monthly-cl',this)">This Month</button>
+        </div>
+
+        <!-- Daily Checklist -->
+        <div class="progress-panel active" id="panel-daily-cl">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">📌 Your daily goals — resets every day</div>
+          <div id="dailyChecklist"></div>
+        </div>
+        <!-- Weekly Checklist -->
+        <div class="progress-panel" id="panel-weekly-cl">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">📌 Weekly targets — resets every Monday</div>
+          <div id="weeklyChecklist"></div>
+        </div>
+        <!-- Monthly Checklist -->
+        <div class="progress-panel" id="panel-monthly-cl">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">📌 Monthly milestones — resets every 1st</div>
+          <div id="monthlyChecklist"></div>
+        </div>
+      </div>
+
+      <!-- Search + Filter -->
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchInput" placeholder="Search problems..." oninput="handleSearch()">
+      </div>
+      <div class="filters">
+        <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('unsolved',this)">Unsolved</button>
+        <button class="filter-btn" onclick="setFilter('done',this)">Completed</button>
+        <button class="filter-btn" onclick="setFilter('revisit',this)">Revisit</button>
+        <button class="filter-btn" onclick="setFilter('easy',this)">Easy</button>
+        <button class="filter-btn" onclick="setFilter('medium',this)">Medium</button>
+        <button class="filter-btn" onclick="setFilter('hard',this)">Hard</button>
+      </div>
+
+      <!-- Pattern Sections -->
+      <div id="patternList"></div>
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right-sidebar">
+      <!-- Today's picks -->
+      <div class="widget">
+        <div class="widget-title">📅 Today's Problems</div>
+        <div id="dailyProblems"></div>
+      </div>
+
+      <!-- Difficulty breakdown -->
+      <div class="widget">
+        <div class="widget-title">📊 Difficulty Breakdown</div>
+        <div class="diff-row">
+          <span class="diff-label" style="color:var(--easy)">Easy</span>
+          <div class="diff-bar"><div class="diff-fill" id="easyFill" style="width:0%;background:var(--easy)"></div></div>
+          <span class="diff-count" id="easyCount">0</span>
+        </div>
+        <div class="diff-row">
+          <span class="diff-label" style="color:var(--medium)">Med</span>
+          <div class="diff-bar"><div class="diff-fill" id="medFill" style="width:0%;background:var(--medium)"></div></div>
+          <span class="diff-count" id="medCount">0</span>
+        </div>
+        <div class="diff-row">
+          <span class="diff-label" style="color:var(--hard)">Hard</span>
+          <div class="diff-bar"><div class="diff-fill" id="hardFill" style="width:0%;background:var(--hard)"></div></div>
+          <span class="diff-count" id="hardCount">0</span>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="widget">
+        <div class="widget-title">🏆 Achievements</div>
+        <div class="achievement" id="ach-first">
+          <div class="ach-icon" style="background:rgba(67,233,123,0.15)">⚡</div>
+          <div><div class="ach-name">First Blood</div><div class="ach-desc">Solve your first problem</div></div>
+        </div>
+        <div class="achievement" id="ach-ten">
+          <div class="ach-icon" style="background:rgba(108,99,255,0.15)">💫</div>
+          <div><div class="ach-name">Getting Started</div><div class="ach-desc">Solve 10 problems</div></div>
+        </div>
+        <div class="achievement" id="ach-fifty">
+          <div class="ach-icon" style="background:rgba(247,151,30,0.15)">🔥</div>
+          <div><div class="ach-name">Halfway There</div><div class="ach-desc">Solve 50 problems</div></div>
+        </div>
+        <div class="achievement" id="ach-hundred">
+          <div class="ach-icon" style="background:rgba(255,101,132,0.15)">💯</div>
+          <div><div class="ach-name">Century Club</div><div class="ach-desc">Solve 100 problems</div></div>
+        </div>
+        <div class="achievement" id="ach-streak7">
+          <div class="ach-icon" style="background:rgba(255,215,0,0.15)">📅</div>
+          <div><div class="ach-name">Week Warrior</div><div class="ach-desc">7 day streak</div></div>
+        </div>
+        <div class="achievement" id="ach-streak30">
+          <div class="ach-icon" style="background:rgba(255,101,132,0.15)">🚀</div>
+          <div><div class="ach-name">Monthly Master</div><div class="ach-desc">30 day streak</div></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- Day Detail Modal -->
+<div class="day-modal-overlay" id="dayModal">
+  <div class="day-modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="day-modal-title" id="dayModalTitle">Day Detail</div>
+      <button class="btn btn-secondary" style="padding:4px 12px;font-size:12px;" onclick="closeDayModal()">✕</button>
+    </div>
+    <div class="day-modal-sub" id="dayModalSub"></div>
+    <div id="dayModalContent"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title" id="modalTitle">Problem</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px;" id="modalPattern"></div>
+    <div class="modal-status">
+      <button class="status-btn active-status" onclick="setStatus('done',this)">✅ Done</button>
+      <button class="status-btn" onclick="setStatus('revisit',this)">↻ Revisit</button>
+      <button class="status-btn" onclick="setStatus('clear',this)">✗ Clear</button>
+    </div>
+    <textarea class="modal-notes" id="modalNotes" placeholder="Add notes, approach, time complexity..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+      <a class="btn btn-primary" id="modalSolveLink" href="#" target="_blank">Solve Problem →</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== QUOTES =====================
+const QUOTES = [
+  { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+  { text: "Every problem has a solution. You just have to be creative enough to find it.", author: "Travis Kalanick" },
+  { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+  { text: "The only way to learn a new programming language is by writing programs in it.", author: "Dennis Ritchie" },
+  { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
+  { text: "Don't practice until you get it right. Practice until you can't get it wrong.", author: "Unknown" },
+  { text: "It's not about how good you are, it's about how good you want to be.", author: "Paul Arden" },
+  { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+  { text: "Hard problems build strong engineers.", author: "Unknown" },
+  { text: "Every line of code you write is a step closer to your dream job.", author: "Unknown" },
+  { text: "Algorithms are the poetry of computation.", author: "Francis Sullivan" },
+  { text: "Your only limit is your mind.", author: "Unknown" },
+  { text: "One algorithm a day keeps the rejection away.", author: "DSA Community" },
+  { text: "Solve one problem completely rather than ten problems partially.", author: "Unknown" },
+  { text: "Consistency beats intensity every single day.", author: "Unknown" },
+  { text: "The best time to solve a LeetCode problem was yesterday. The second best time is now.", author: "DSA Wisdom" },
+  { text: "Pattern recognition is the bridge between confusion and mastery.", author: "Unknown" },
+  { text: "Think twice, code once.", author: "Unknown" },
+  { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" },
+  { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
+];
+
+// ===================== DATA =====================
+const PATTERNS = [
+  {
+    id: 'two-pointers', num: 1, name: 'Two Pointers',
+    color: '#6c63ff',
+    ytLink: 'https://www.youtube.com/watch?v=On03HWe2tZM',
+    questions: [
+      { id: 'tp1', name: 'Pair with Target Sum', diff: 'easy', lc: 'https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/' },
+      { id: 'tp2', name: 'Rearrange 0s and 1s', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/segregate-0s-and-1s5106/1' },
+      { id: 'tp3', name: 'Remove Duplicates', diff: 'easy', lc: 'https://leetcode.com/problems/remove-duplicates-from-sorted-array/' },
+      { id: 'tp4', name: 'Squaring a Sorted Array', diff: 'easy', lc: 'https://leetcode.com/problems/squares-of-a-sorted-array/' },
+      { id: 'tp5', name: 'Triplet Sum to Zero (3Sum)', diff: 'medium', lc: 'https://leetcode.com/problems/3sum/' },
+      { id: 'tp6', name: 'Triplet Sum Close to Target', diff: 'medium', lc: 'https://leetcode.com/problems/3sum-closest/' },
+      { id: 'tp7', name: 'Triplets with Smaller Sum', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/count-triplets-with-sum-smaller-than-x5549/1' },
+      { id: 'tp8', name: 'Subarray Product Less Than K', diff: 'medium', lc: 'https://leetcode.com/problems/subarray-product-less-than-k/' },
+      { id: 'tp9', name: 'Dutch National Flag (Sort Colors)', diff: 'medium', lc: 'https://leetcode.com/problems/sort-colors/' },
+      { id: 'tp10', name: 'Quadruple Sum to Target (4Sum)', diff: 'medium', lc: 'https://leetcode.com/problems/4sum/' },
+      { id: 'tp11', name: 'Comparing Strings with Backspaces', diff: 'medium', lc: 'https://leetcode.com/problems/backspace-string-compare/' },
+      { id: 'tp12', name: 'Minimum Window Sort', diff: 'medium', lc: 'https://leetcode.com/problems/shortest-unsorted-continuous-subarray/' },
+    ]
+  },
+  {
+    id: 'fast-slow', num: 2, name: 'Fast & Slow Pointers',
+    color: '#ff6584',
+    ytLink: 'https://www.youtube.com/watch?v=gBTe7lFR3vc',
+    questions: [
+      { id: 'fs1', name: 'LinkedList Cycle Detection', diff: 'easy', lc: 'https://leetcode.com/problems/linked-list-cycle/' },
+      { id: 'fs2', name: 'Start of LinkedList Cycle', diff: 'medium', lc: 'https://leetcode.com/problems/linked-list-cycle-ii/' },
+      { id: 'fs3', name: 'Happy Number', diff: 'medium', lc: 'https://leetcode.com/problems/happy-number/' },
+      { id: 'fs4', name: 'Find Duplicate Number', diff: 'medium', lc: 'https://leetcode.com/problems/find-the-duplicate-number/' },
+      { id: 'fs5', name: 'Middle of the LinkedList', diff: 'easy', lc: 'https://leetcode.com/problems/middle-of-the-linked-list/' },
+      { id: 'fs6', name: 'Palindrome LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/palindrome-linked-list/' },
+      { id: 'fs7', name: 'Rearrange a LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/reorder-list/' },
+      { id: 'fs8', name: 'Cycle in a Circular Array', diff: 'hard', lc: 'https://leetcode.com/problems/circular-array-loop/' },
+    ]
+  },
+  {
+    id: 'sliding-window', num: 3, name: 'Sliding Window',
+    color: '#43e97b',
+    ytLink: 'https://www.youtube.com/watch?v=MK-NZ4hN7rs',
+    questions: [
+      { id: 'sw1', name: 'Maximum Sum Subarray of Size K', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/max-sum-subarray-of-size-k5313/1' },
+      { id: 'sw2', name: 'Minimum Size Subarray Sum', diff: 'easy', lc: 'https://leetcode.com/problems/minimum-size-subarray-sum/' },
+      { id: 'sw3', name: 'Longest Substring with K Distinct Chars', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/longest-k-unique-characters-substring0853/1' },
+      { id: 'sw4', name: 'Fruits into Baskets', diff: 'medium', lc: 'https://leetcode.com/problems/fruit-into-baskets/' },
+      { id: 'sw5', name: 'Longest Substring Without Repeating', diff: 'hard', lc: 'https://leetcode.com/problems/longest-substring-without-repeating-characters/' },
+      { id: 'sw6', name: 'Longest Repeating Char Replacement', diff: 'hard', lc: 'https://leetcode.com/problems/longest-repeating-character-replacement/' },
+      { id: 'sw7', name: 'Max Consecutive Ones III', diff: 'hard', lc: 'https://leetcode.com/problems/max-consecutive-ones-iii/' },
+      { id: 'sw8', name: 'Minimum Window Substring', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-window-substring/' },
+      { id: 'sw9', name: 'Permutation in a String', diff: 'hard', lc: 'https://leetcode.com/problems/permutation-in-string/' },
+      { id: 'sw10', name: 'Find All Anagrams in a String', diff: 'hard', lc: 'https://leetcode.com/problems/find-all-anagrams-in-a-string/' },
+      { id: 'sw11', name: 'Substring with Concatenation of All Words', diff: 'hard', lc: 'https://leetcode.com/problems/substring-with-concatenation-of-all-words/' },
+    ]
+  },
+  {
+    id: 'kadane', num: '3b', name: 'Kadane\'s Algorithm',
+    color: '#f7971e',
+    ytLink: 'https://www.youtube.com/watch?v=86CQq3pKSUw',
+    questions: [
+      { id: 'ka1', name: 'Maximum Subarray Sum', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-subarray/' },
+      { id: 'ka2', name: 'Minimum Subarray Sum', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/smallest-sum-contiguous-subarray/1' },
+      { id: 'ka3', name: 'Maximum Product Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-product-subarray/' },
+      { id: 'ka4', name: 'Max Subarray Sum with One Deletion', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/' },
+      { id: 'ka5', name: 'Maximum Absolute Sum of Any Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-absolute-sum-of-any-subarray/' },
+      { id: 'ka6', name: 'Maximum Sum Circular Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-sum-circular-subarray/' },
+    ]
+  },
+  {
+    id: 'prefix-sum', num: '3c', name: 'Prefix Sum',
+    color: '#a29bfe',
+    ytLink: 'https://www.youtube.com/watch?v=7pJo_rM0z_s',
+    questions: [
+      { id: 'ps1', name: 'Subarray Sum Equals K', diff: 'easy', lc: 'https://leetcode.com/problems/subarray-sum-equals-k/' },
+      { id: 'ps2', name: 'Find Pivot Index', diff: 'easy', lc: 'https://leetcode.com/problems/find-pivot-index/' },
+      { id: 'ps3', name: 'Subarray Sums Divisible by K', diff: 'medium', lc: 'https://leetcode.com/problems/subarray-sums-divisible-by-k/' },
+      { id: 'ps4', name: 'Contiguous Array', diff: 'medium', lc: 'https://leetcode.com/problems/contiguous-array/' },
+      { id: 'ps5', name: 'Shortest Subarray With Sum ≥ K', diff: 'hard', lc: 'https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/' },
+      { id: 'ps6', name: 'Count of Range Sum', diff: 'hard', lc: 'https://leetcode.com/problems/count-of-range-sum/' },
+    ]
+  },
+  {
+    id: 'merge-intervals', num: 4, name: 'Merge Intervals',
+    color: '#fd79a8',
+    ytLink: 'https://www.youtube.com/watch?v=qKczfGUrFY4',
+    questions: [
+      { id: 'mi1', name: 'Merge Intervals', diff: 'medium', lc: 'https://leetcode.com/problems/merge-intervals/' },
+      { id: 'mi2', name: 'Insert Interval', diff: 'medium', lc: 'https://leetcode.com/problems/insert-interval/' },
+      { id: 'mi3', name: 'Intervals Intersection', diff: 'medium', lc: 'https://leetcode.com/problems/interval-list-intersections/' },
+      { id: 'mi4', name: 'Minimum Meeting Rooms', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/attend-all-meetings-ii/1' },
+      { id: 'mi5', name: 'Maximum CPU Load', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/maximum-cpu-load-from-the-given-list-of-jobs/' },
+    ]
+  },
+  {
+    id: 'cyclic-sort', num: 5, name: 'Cyclic Sort',
+    color: '#55efc4',
+    ytLink: 'https://www.youtube.com/watch?v=JfinxytTYFQ',
+    questions: [
+      { id: 'cs1', name: 'Cyclic Sort', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/sort-an-array-which-contain-1-to-n-values-in-on-using-cycle-sort/' },
+      { id: 'cs2', name: 'Find the Missing Number', diff: 'easy', lc: 'https://leetcode.com/problems/missing-number/' },
+      { id: 'cs3', name: 'Find all Missing Numbers', diff: 'easy', lc: 'https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/' },
+      { id: 'cs4', name: 'Find the Duplicate Number', diff: 'easy', lc: 'https://leetcode.com/problems/find-the-duplicate-number/' },
+      { id: 'cs5', name: 'Find all Duplicate Numbers', diff: 'easy', lc: 'https://leetcode.com/problems/find-all-duplicates-in-an-array/' },
+      { id: 'cs6', name: 'First Missing Positive', diff: 'medium', lc: 'https://leetcode.com/problems/first-missing-positive/' },
+    ]
+  },
+  {
+    id: 'linkedlist-reversal', num: 6, name: 'In-place LinkedList Reversal',
+    color: '#74b9ff',
+    ytLink: 'https://www.youtube.com/watch?v=G0_I-ZF0S38',
+    questions: [
+      { id: 'll1', name: 'Reverse a LinkedList', diff: 'easy', lc: 'https://leetcode.com/problems/reverse-linked-list/' },
+      { id: 'll2', name: 'Reverse a Sub-list', diff: 'medium', lc: 'https://leetcode.com/problems/reverse-linked-list-ii/' },
+      { id: 'll3', name: 'Reverse List in Pairs', diff: 'medium', lc: 'https://leetcode.com/problems/swap-nodes-in-pairs/' },
+      { id: 'll4', name: 'Reverse every K-element Sub-list', diff: 'hard', lc: 'https://leetcode.com/problems/reverse-nodes-in-k-group/' },
+      { id: 'll5', name: 'Reverse Nodes in Even Length Groups', diff: 'hard', lc: 'https://leetcode.com/problems/reverse-nodes-in-even-length-groups/' },
+      { id: 'll6', name: 'Rotate a LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/rotate-list/' },
+    ]
+  },
+  {
+    id: 'stack', num: 7, name: 'Stack Pattern',
+    color: '#e17055',
+    ytLink: 'https://www.youtube.com/watch?v=GYptUgnIM_I',
+    questions: [
+      { id: 'st1', name: 'Remove Adjacent Duplicates in String', diff: 'easy', lc: 'https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/' },
+      { id: 'st2', name: 'Valid Parentheses', diff: 'easy', lc: 'https://leetcode.com/problems/valid-parentheses/' },
+      { id: 'st3', name: 'Next Greater Element II', diff: 'easy', lc: 'https://leetcode.com/problems/next-greater-element-ii/' },
+      { id: 'st4', name: 'Daily Temperatures', diff: 'easy', lc: 'https://leetcode.com/problems/daily-temperatures/' },
+      { id: 'st5', name: 'Remove Nodes From Linked List', diff: 'easy', lc: 'https://leetcode.com/problems/remove-nodes-from-linked-list/' },
+      { id: 'st6', name: 'Remove All Adjacent Duplicates II', diff: 'medium', lc: 'https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/' },
+      { id: 'st7', name: 'Simplify Path', diff: 'medium', lc: 'https://leetcode.com/problems/simplify-path/' },
+      { id: 'st8', name: 'Remove K Digits', diff: 'hard', lc: 'https://leetcode.com/problems/remove-k-digits/' },
+    ]
+  },
+  {
+    id: 'hashing', num: 9, name: 'Hash Maps',
+    color: '#fdcb6e',
+    ytLink: 'https://www.youtube.com/watch?v=rvitJHLUMar',
+    questions: [
+      { id: 'hm1', name: 'First Non-Repeating Character', diff: 'easy', lc: 'https://leetcode.com/problems/first-unique-character-in-a-string/' },
+      { id: 'hm2', name: 'Maximum Number of Balloons', diff: 'easy', lc: 'https://leetcode.com/problems/maximum-number-of-balloons/' },
+      { id: 'hm3', name: 'Longest Palindrome', diff: 'easy', lc: 'https://leetcode.com/problems/longest-palindrome/' },
+      { id: 'hm4', name: 'Ransom Note', diff: 'easy', lc: 'https://leetcode.com/problems/ransom-note/' },
+    ]
+  },
+  {
+    id: 'binary-search', num: 10, name: 'Binary Search',
+    color: '#6c63ff',
+    ytLink: 'https://www.youtube.com/watch?v=GU7DpgHINWQ',
+    questions: [
+      { id: 'bs1', name: 'Binary Search Basic', diff: 'easy', lc: 'https://leetcode.com/problems/binary-search/' },
+      { id: 'bs2', name: 'Upper Bound / Ceiling', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/ceil-in-a-sorted-array/1' },
+      { id: 'bs3', name: 'First and Last Position', diff: 'medium', lc: 'https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/' },
+      { id: 'bs4', name: 'Count Number of Occurrences', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/number-of-occurrence2259/1' },
+      { id: 'bs5', name: 'Peak Index in Mountain Array', diff: 'medium', lc: 'https://leetcode.com/problems/peak-index-in-a-mountain-array/' },
+      { id: 'bs6', name: 'Find Peak Element', diff: 'medium', lc: 'https://leetcode.com/problems/find-peak-element/' },
+      { id: 'bs7', name: 'Find Minimum in Rotated Sorted Array', diff: 'medium', lc: 'https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/' },
+      { id: 'bs8', name: 'Search in Rotated Sorted Array', diff: 'medium', lc: 'https://leetcode.com/problems/search-in-rotated-sorted-array/' },
+      { id: 'bs9', name: 'Koko Eating Bananas', diff: 'medium', lc: 'https://leetcode.com/problems/koko-eating-bananas/' },
+      { id: 'bs10', name: 'Min Days to Make M Bouquets', diff: 'medium', lc: 'https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/' },
+      { id: 'bs11', name: 'Aggressive Cows', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/aggressive-cows/1' },
+      { id: 'bs12', name: 'Book Allocation Problem', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/allocate-minimum-number-of-pages0937/1' },
+      { id: 'bs13', name: 'Split Array Largest Sum', diff: 'hard', lc: 'https://leetcode.com/problems/split-array-largest-sum/' },
+      { id: 'bs14', name: 'Capacity to Ship Packages in D Days', diff: 'medium', lc: 'https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/' },
+      { id: 'bs15', name: 'Search a 2D Matrix', diff: 'medium', lc: 'https://leetcode.com/problems/search-a-2d-matrix/' },
+      { id: 'bs16', name: 'Search 2D Matrix II', diff: 'hard', lc: 'https://leetcode.com/problems/search-a-2d-matrix-ii/' },
+      { id: 'bs17', name: 'Kth Smallest in Sorted Matrix', diff: 'medium', lc: 'https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/' },
+      { id: 'bs18', name: 'Median of Two Sorted Arrays', diff: 'hard', lc: 'https://leetcode.com/problems/median-of-two-sorted-arrays/' },
+    ]
+  },
+  {
+    id: 'heap', num: 11, name: 'Heap / Priority Queue',
+    color: '#fd79a8',
+    ytLink: 'https://www.youtube.com/watch?v=t0Cq6tVNRBA',
+    questions: [
+      { id: 'hp1', name: 'Kth Smallest Element', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1' },
+      { id: 'hp2', name: 'Kth Largest Element in Array', diff: 'medium', lc: 'https://leetcode.com/problems/kth-largest-element-in-an-array/' },
+      { id: 'hp3', name: 'Top K Frequent Elements', diff: 'medium', lc: 'https://leetcode.com/problems/top-k-frequent-elements/' },
+      { id: 'hp4', name: 'Top K Frequent Words', diff: 'medium', lc: 'https://leetcode.com/problems/top-k-frequent-words/' },
+      { id: 'hp5', name: 'K Closest Points to Origin', diff: 'medium', lc: 'https://leetcode.com/problems/k-closest-points-to-origin/' },
+      { id: 'hp6', name: 'Find K Closest Elements', diff: 'medium', lc: 'https://leetcode.com/problems/find-k-closest-elements/' },
+      { id: 'hp7', name: 'Merge K Sorted Arrays', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/merge-k-sorted-arrays/1' },
+      { id: 'hp8', name: 'Last Stone Weight', diff: 'easy', lc: 'https://leetcode.com/problems/last-stone-weight/' },
+      { id: 'hp9', name: 'Task Scheduler', diff: 'medium', lc: 'https://leetcode.com/problems/task-scheduler/' },
+      { id: 'hp10', name: 'Reorganize String', diff: 'medium', lc: 'https://leetcode.com/problems/reorganize-string/' },
+      { id: 'hp11', name: 'Min Refueling Stops', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-number-of-refueling-stops/' },
+      { id: 'hp12', name: 'IPO', diff: 'hard', lc: 'https://leetcode.com/problems/ipo/' },
+      { id: 'hp13', name: 'Course Scheduler 3', diff: 'hard', lc: 'https://leetcode.com/problems/course-schedule-iii/' },
+      { id: 'hp14', name: 'Find Median from Data Stream', diff: 'hard', lc: 'https://leetcode.com/problems/find-median-from-data-stream/' },
+      { id: 'hp15', name: 'Sliding Window Median', diff: 'hard', lc: 'https://leetcode.com/problems/sliding-window-median/' },
+    ]
+  },
+  {
+    id: 'recursion-backtrack', num: 12, name: 'Recursion & Backtracking',
+    color: '#a29bfe',
+    ytLink: 'https://www.youtube.com/watch?v=j4wjZqzhMqc',
+    questions: [
+      { id: 'rb1', name: 'Fibonacci Number', diff: 'easy', lc: 'https://leetcode.com/problems/fibonacci-number/', yt: 'https://www.youtube.com/watch?v=j4wjZqzhMqc' },
+      { id: 'rb2', name: 'Check if String is Palindrome', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/palindrome-string0817/1', yt: 'https://www.youtube.com/watch?v=j4wjZqzhMqc' },
+      { id: 'rb3', name: 'Check if Array is Sorted', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/check-if-an-array-is-sorted0701/1', yt: 'https://www.youtube.com/watch?v=-gC-QEdpvO4' },
+      { id: 'rb4', name: 'Sum of Digits of a Number', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/sum-of-digits1742/1', yt: 'https://www.youtube.com/watch?v=-gC-QEdpvO4' },
+      { id: 'rb5', name: 'Remove All Occurrences of a Char', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/remove-all-occurrences-of-a-character-in-a-string/1' },
+      { id: 'rb6', name: 'Generate Parentheses', diff: 'medium', lc: 'https://leetcode.com/problems/generate-parentheses/' },
+      { id: 'rb7', name: 'Letter Combinations of Phone Number', diff: 'medium', lc: 'https://leetcode.com/problems/letter-combinations-of-a-phone-number/', yt: 'https://www.youtube.com/watch?v=IKfIT6uFOcs' },
+      { id: 'rb8', name: 'Permutations', diff: 'medium', lc: 'https://leetcode.com/problems/permutations/' },
+      { id: 'rb9', name: 'Combination Sum', diff: 'medium', lc: 'https://leetcode.com/problems/combination-sum/' },
+      { id: 'rb10', name: 'Palindrome Partitioning', diff: 'medium', lc: 'https://leetcode.com/problems/palindrome-partitioning/' },
+    ]
+  },
+  {
+    id: 'graph-bfs', num: 13, name: 'Island / Matrix Traversal (BFS/DFS)',
+    color: '#55efc4',
+    ytLink: 'https://www.youtube.com/watch?v=tWVWeAqZ0WU',
+    questions: [
+      { id: 'gr1', name: 'Number of Islands', diff: 'easy', lc: 'https://leetcode.com/problems/number-of-islands/' },
+      { id: 'gr2', name: 'Flood Fill', diff: 'easy', lc: 'https://leetcode.com/problems/flood-fill/' },
+      { id: 'gr3', name: 'Number of Closed Islands', diff: 'easy', lc: 'https://leetcode.com/problems/number-of-closed-islands/' },
+      { id: 'gr4', name: 'Max Area of Island', diff: 'medium', lc: 'https://leetcode.com/problems/max-area-of-island/' },
+      { id: 'gr5', name: 'Surrounded Regions', diff: 'medium', lc: 'https://leetcode.com/problems/surrounded-regions/' },
+    ]
+  },
+  {
+    id: 'subsets', num: 15, name: 'Subsets',
+    color: '#74b9ff',
+    ytLink: 'https://www.youtube.com/watch?v=REOH22Xwdkk',
+    questions: [
+      { id: 'sub1', name: 'Subsets', diff: 'easy', lc: 'https://leetcode.com/problems/subsets/' },
+      { id: 'sub2', name: 'Subsets With Duplicates', diff: 'easy', lc: 'https://leetcode.com/problems/subsets-ii/' },
+      { id: 'sub3', name: 'Permutations II', diff: 'medium', lc: 'https://leetcode.com/problems/permutations-ii/' },
+      { id: 'sub4', name: 'Combination Sum II', diff: 'medium', lc: 'https://leetcode.com/problems/combination-sum-ii/' },
+      { id: 'sub5', name: 'Generalized Abbreviation', diff: 'hard', lc: 'https://leetcode.com/problems/generalized-abbreviation/' },
+    ]
+  },
+  {
+    id: 'greedy', num: 20, name: 'Greedy Algorithms',
+    color: '#f7971e',
+    ytLink: 'https://www.youtube.com/watch?v=lfQvPHGtu6Q',
+    questions: [
+      { id: 'gr20-1', name: 'Valid Palindrome II', diff: 'easy', lc: 'https://leetcode.com/problems/valid-palindrome-ii/' },
+      { id: 'gr20-2', name: 'Maximum Length of Pair Chain', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-length-of-pair-chain/' },
+      { id: 'gr20-3', name: 'Min Add to Make Parentheses Valid', diff: 'medium', lc: 'https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/' },
+      { id: 'gr20-4', name: 'Remove Duplicate Letters', diff: 'medium', lc: 'https://leetcode.com/problems/remove-duplicate-letters/' },
+      { id: 'gr20-5', name: 'Largest Palindromic Number', diff: 'medium', lc: 'https://leetcode.com/problems/largest-palindromic-number/' },
+      { id: 'gr20-6', name: 'Removing Min and Max From Array', diff: 'medium', lc: 'https://leetcode.com/problems/removing-minimum-and-maximum-from-array/' },
+    ]
+  },
+  {
+    id: 'dp-knapsack', num: 21, name: '0/1 Knapsack (Dynamic Programming)',
+    color: '#e17055',
+    ytLink: 'https://www.youtube.com/watch?v=cJ21moQpofY',
+    questions: [
+      { id: 'dp1', name: '0/1 Knapsack', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/0-1-knapsack-problem-dp-10/' },
+      { id: 'dp2', name: 'Partition Equal Subset Sum', diff: 'medium', lc: 'https://leetcode.com/problems/partition-equal-subset-sum/' },
+      { id: 'dp3', name: 'Subset Sum', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/subset-sum-problem-dp-25/' },
+      { id: 'dp4', name: 'Minimum Subset Sum Difference', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/partition-a-set-into-two-subsets-such-that-the-difference-of-subset-sums-is-minimum/' },
+      { id: 'dp5', name: 'Target Sum', diff: 'medium', lc: 'https://leetcode.com/problems/target-sum/' },
+      { id: 'dp6', name: 'Last Stone Weight II', diff: 'medium', lc: 'https://leetcode.com/problems/last-stone-weight-ii/' },
+    ]
+  },
+  {
+    id: 'trie', num: 23, name: 'Trie',
+    color: '#6c63ff',
+    ytLink: 'https://www.youtube.com/watch?v=oobqoCJlHA0',
+    questions: [
+      { id: 'tr1', name: 'Implement Trie (Prefix Tree)', diff: 'medium', lc: 'https://leetcode.com/problems/implement-trie-prefix-tree/' },
+      { id: 'tr2', name: 'Design Add and Search Words Data Structure', diff: 'medium', lc: 'https://leetcode.com/problems/design-add-and-search-words-data-structure/' },
+      { id: 'tr3', name: 'Extra Characters in a String', diff: 'medium', lc: 'https://leetcode.com/problems/extra-characters-in-a-string/' },
+      { id: 'tr4', name: 'Search Suggestions System', diff: 'medium', lc: 'https://leetcode.com/problems/search-suggestions-system/' },
+    ]
+  },
+  {
+    id: 'topological-sort', num: 24, name: 'Topological Sort (Graph)',
+    color: '#ff6584',
+    ytLink: 'https://www.youtube.com/watch?v=cIBFEhD77b4',
+    questions: [
+      { id: 'ts1', name: 'Course Schedule (Tasks Scheduling)', diff: 'medium', lc: 'https://leetcode.com/problems/course-schedule/', yt: 'https://www.youtube.com/watch?v=cIBFEhD77b4' },
+      { id: 'ts2', name: 'Course Schedule II (Tasks Scheduling Order)', diff: 'medium', lc: 'https://leetcode.com/problems/course-schedule-ii/' },
+      { id: 'ts3', name: 'All Course Schedules', diff: 'hard', lc: 'https://leetcode.com/problems/all-paths-source-target/' },
+      { id: 'ts4', name: 'Alien Dictionary', diff: 'hard', lc: 'https://leetcode.com/problems/alien-dictionary/' },
+      { id: 'ts5', name: 'Sequence Reconstruction', diff: 'hard', lc: 'https://leetcode.com/problems/sequence-reconstruction/' },
+      { id: 'ts6', name: 'Minimum Height Trees', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-height-trees/' },
+    ]
+  },
+  {
+    id: 'union-find', num: 25, name: 'Union Find',
+    color: '#43e97b',
+    ytLink: 'https://www.youtube.com/watch?v=ayW5B2W9hfo',
+    questions: [
+      { id: 'uf1', name: 'Redundant Connection', diff: 'medium', lc: 'https://leetcode.com/problems/redundant-connection/' },
+      { id: 'uf2', name: 'Redundant Connection II', diff: 'hard', lc: 'https://leetcode.com/problems/redundant-connection-ii/' },
+      { id: 'uf3', name: 'Number of Provinces', diff: 'medium', lc: 'https://leetcode.com/problems/number-of-provinces/' },
+      { id: 'uf4', name: 'Is Graph Bipartite?', diff: 'medium', lc: 'https://leetcode.com/problems/is-graph-bipartite/' },
+      { id: 'uf5', name: 'Path With Minimum Effort', diff: 'medium', lc: 'https://leetcode.com/problems/path-with-minimum-effort/' },
+    ]
+  },
+  {
+    id: 'ordered-set', num: 26, name: 'Ordered Set',
+    color: '#fdcb6e',
+    ytLink: 'https://www.youtube.com/results?search_query=ordered+set+DSA',
+    questions: [
+      { id: 'os1', name: 'Merge Similar Items', diff: 'easy', lc: 'https://leetcode.com/problems/merge-similar-items/' },
+      { id: 'os2', name: '132 Pattern', diff: 'medium', lc: 'https://leetcode.com/problems/132-pattern/' },
+      { id: 'os3', name: 'My Calendar I', diff: 'medium', lc: 'https://leetcode.com/problems/my-calendar-i/' },
+      { id: 'os4', name: 'My Calendar II', diff: 'medium', lc: 'https://leetcode.com/problems/my-calendar-ii/' },
+      { id: 'os5', name: 'My Calendar III', diff: 'hard', lc: 'https://leetcode.com/problems/my-calendar-iii/' },
+    ]
+  },
+];
+
+const TOTAL = PATTERNS.reduce((s, p) => s + p.questions.length, 0);
+
+// ===================== STATE =====================
+let state = JSON.parse(localStorage.getItem('dsaTracker') || '{}');
+if (!state.solved) state.solved = {};
+if (!state.activity) state.activity = {};
+if (!state.streak) state.streak = { current: 0, last: null, best: 0 };
+if (!state.checklists) state.checklists = {};
+
+let currentFilter = 'all';
+let currentSearch = '';
+let modalQ = null;
+let openPatterns = new Set();
+let calendarMonth = new Date();
+
+function save() { localStorage.setItem('dsaTracker', JSON.stringify(state)); }
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function markActivity() {
+  const t = today();
+  if (!state.activity[t]) state.activity[t] = 0;
+  state.activity[t]++;
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yd = yesterday.toISOString().split('T')[0];
+  if (state.streak.last === yd) {
+    state.streak.current++;
+  } else if (state.streak.last !== t) {
+    state.streak.current = 1;
+  }
+  state.streak.last = t;
+  state.streak.best = Math.max(state.streak.best, state.streak.current);
+  save();
+}
+
+// ===================== COMPUTE =====================
+function getSolvedCount() { return Object.values(state.solved).filter(v => v.status === 'done').length; }
+function getHardCount() {
+  let c = 0;
+  PATTERNS.forEach(p => p.questions.forEach(q => {
+    if (q.diff === 'hard' && state.solved[q.id]?.status === 'done') c++;
+  }));
+  return c;
+}
+function getPatternsDoneCount() {
+  return PATTERNS.filter(p => p.questions.every(q => state.solved[q.id]?.status === 'done')).length;
+}
+function getDiffCounts() {
+  let easy=0, med=0, hard=0, tEasy=0, tMed=0, tHard=0;
+  PATTERNS.forEach(p => p.questions.forEach(q => {
+    if(q.diff==='easy') tEasy++; else if(q.diff==='medium') tMed++; else tHard++;
+    if(state.solved[q.id]?.status==='done') {
+      if(q.diff==='easy') easy++; else if(q.diff==='medium') med++; else hard++;
+    }
+  }));
+  return {easy,med,hard,tEasy,tMed,tHard};
+}
+function getSolvedOnDate(dateStr) {
+  const items = [];
+  PATTERNS.forEach(p => p.questions.forEach(q => {
+    if (state.solved[q.id]?.date === dateStr && state.solved[q.id]?.status === 'done') {
+      items.push({ q, patternName: p.name });
+    }
+  }));
+  return items;
+}
+function getWeekData() {
+  const days = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const dStr = d.toISOString().split('T')[0];
+    days.push({ date: dStr, count: state.activity[dStr] || 0, label: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()], isToday: dStr === today() });
+  }
+  return days;
+}
+function getMonthSolvedCount(year, month) {
+  let count = 0;
+  Object.entries(state.activity).forEach(([d, v]) => {
+    const dd = new Date(d);
+    if (dd.getFullYear() === year && dd.getMonth() === month) count += v;
+  });
+  return count;
+}
+function getMonthActiveDays(year, month) {
+  return Object.entries(state.activity).filter(([d, v]) => {
+    const dd = new Date(d);
+    return dd.getFullYear() === year && dd.getMonth() === month && v > 0;
+  }).length;
+}
+
+// ===================== RENDER ALL =====================
+function renderAll() {
+  renderStats();
+  renderPatternNav();
+  renderPatterns();
+  renderCalendar();
+  renderWeekDots();
+  renderWeekBars();
+  renderMonthCalendar();
+  renderMonthStats();
+  renderDaily();
+  renderAchievements();
+  renderDiffBreakdown();
+  renderChecklists();
+  renderQuote();
+}
+
+function renderQuote() {
+  const d = new Date();
+  const idx = (d.getDate() + d.getMonth() * 31) % QUOTES.length;
+  const q = QUOTES[idx];
+  document.getElementById('quoteText').textContent = '"' + q.text + '"';
+  document.getElementById('quoteAuthor').textContent = '— ' + q.author;
+}
+
+function renderStats() {
+  const solved = getSolvedCount();
+  const streak = state.streak.current;
+  document.getElementById('navStreak').textContent = streak;
+  document.getElementById('navSolved').textContent = solved;
+  document.getElementById('navTotal').textContent = TOTAL;
+  document.getElementById('heroSolved').textContent = solved;
+  document.getElementById('heroStreak').textContent = streak;
+  document.getElementById('heroHard').textContent = getHardCount();
+  document.getElementById('heroPatterns').textContent = getPatternsDoneCount();
+  const pct = Math.round((solved/TOTAL)*100);
+  document.getElementById('heroBigFill').style.width = pct + '%';
+  document.querySelector('.big-bar-label span:first-child').textContent = pct + '% complete';
+  document.getElementById('heroBarLabel').textContent = solved + ' / ' + TOTAL + ' problems';
+}
+
+function renderPatternNav() {
+  const nav = document.getElementById('patternNav');
+  nav.innerHTML = '';
+  PATTERNS.forEach(p => {
+    const done = p.questions.filter(q => state.solved[q.id]?.status === 'done').length;
+    const pct = Math.round((done/p.questions.length)*100);
+    const item = document.createElement('div');
+    item.className = 'pattern-nav-item' + (openPatterns.has(p.id) ? ' active' : '');
+    item.innerHTML = `
+      <div class="pni-dot"></div>
+      <span class="pni-name">${p.name}</span>
+      <span class="pni-count">${done}/${p.questions.length}</span>
+      <div class="pni-bar"><div class="pni-fill" style="width:${pct}%"></div></div>
+    `;
+    item.onclick = () => {
+      const el = document.getElementById('pattern-' + p.id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    nav.appendChild(item);
+  });
+}
+
+function renderPatterns() {
+  const list = document.getElementById('patternList');
+  list.innerHTML = '';
+  PATTERNS.forEach(p => {
+    const done = p.questions.filter(q => state.solved[q.id]?.status === 'done').length;
+    const pct = Math.round((done/p.questions.length)*100);
+    const isOpen = openPatterns.has(p.id);
+    let qs = p.questions;
+    if (currentFilter === 'done') qs = qs.filter(q => state.solved[q.id]?.status === 'done');
+    else if (currentFilter === 'unsolved') qs = qs.filter(q => !state.solved[q.id] || state.solved[q.id].status !== 'done');
+    else if (currentFilter === 'revisit') qs = qs.filter(q => state.solved[q.id]?.status === 'revisit');
+    else if (['easy','medium','hard'].includes(currentFilter)) qs = qs.filter(q => q.diff === currentFilter);
+    if (currentSearch) qs = qs.filter(q => q.name.toLowerCase().includes(currentSearch.toLowerCase()));
+    if ((currentSearch || currentFilter !== 'all') && qs.length === 0) return;
+
+    const section = document.createElement('div');
+    section.className = 'pattern-section';
+    section.id = 'pattern-' + p.id;
+
+    const header = document.createElement('div');
+    header.className = 'pattern-header' + (isOpen ? ' open' : '');
+    header.innerHTML = `
+      <div class="pattern-num" style="background:${p.color}">${p.num}</div>
+      <span class="pattern-name">${p.name}</span>
+      ${p.ytLink ? `<a href="${p.ytLink}" target="_blank" class="q-link yt" onclick="event.stopPropagation()" style="font-size:10px;padding:3px 8px;">▶ YT</a>` : ''}
+      <span class="pattern-progress-text">${done}/${p.questions.length}</span>
+      <span class="pattern-chevron">▼</span>
+    `;
+    header.onclick = () => {
+      if (openPatterns.has(p.id)) openPatterns.delete(p.id);
+      else openPatterns.add(p.id);
+      renderPatterns(); renderPatternNav();
+    };
+    section.appendChild(header);
+
+    if (isOpen || currentSearch || currentFilter !== 'all') {
+      const body = document.createElement('div');
+      body.className = 'pattern-body';
+      body.innerHTML = `<div class="pattern-mini-bar"><div class="pattern-mini-fill" style="width:${pct}%"></div></div>`;
+      const displayQs = (currentSearch || currentFilter !== 'all') ? qs : p.questions;
+      displayQs.forEach(q => {
+        const status = state.solved[q.id]?.status || '';
+        const row = document.createElement('div');
+        row.className = 'question-row';
+        row.innerHTML = `
+          <div class="q-check ${status}" onclick="toggleQuestion('${q.id}','${p.id}',event)"></div>
+          <span class="q-name ${status === 'done' ? 'done' : ''}">${q.name}</span>
+          <span class="q-diff ${q.diff}">${q.diff}</span>
+          <div class="q-links">
+            ${q.lc ? `<a href="${q.lc}" target="_blank" class="q-link lc" onclick="event.stopPropagation()">LC</a>` : ''}
+            ${q.gfg ? `<a href="${q.gfg}" target="_blank" class="q-link gfg" onclick="event.stopPropagation()">GFG</a>` : ''}
+            ${q.yt ? `<a href="${q.yt}" target="_blank" class="q-link yt" onclick="event.stopPropagation()">▶</a>` : ''}
+            <button class="q-link" style="background:rgba(255,255,255,0.05);color:var(--text3);border:1px solid var(--border);cursor:pointer;" onclick="openModal('${q.id}','${p.id}',event)">✎</button>
+          </div>
+        `;
+        body.appendChild(row);
+      });
+      section.appendChild(body);
+    }
+    list.appendChild(section);
+  });
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const now = new Date();
+  const t = today();
+  for (let i = 181; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const dStr = d.toISOString().split('T')[0];
+    const count = state.activity[dStr] || 0;
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell';
+    if (count >= 5) cell.classList.add('lvl-4');
+    else if (count >= 3) cell.classList.add('lvl-3');
+    else if (count >= 1) cell.classList.add('lvl-2');
+    if (dStr === t) cell.classList.add('today');
+    cell.title = `${dStr}: ${count} solved`;
+    cell.onclick = () => openDayModal(dStr, count);
+    grid.appendChild(cell);
+  }
+}
+
+function renderWeekDots() {
+  const container = document.getElementById('weekDots');
+  if (!container) return;
+  container.innerHTML = '';
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  let activeDays = 0;
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - dayOfWeek + i);
+    const dStr = d.toISOString().split('T')[0];
+    const count = state.activity[dStr] || 0;
+    const isToday = dStr === today();
+    const isPast = d <= now;
+    const isFuture = d > now && !isToday;
+    if (count > 0 && isPast) activeDays++;
+
+    const col = document.createElement('div');
+    col.className = 'week-day-cell';
+    col.innerHTML = `
+      <div class="week-day-dot ${count > 0 && isPast ? 'active' : ''} ${isToday ? 'today-dot' : ''} ${isPast && count === 0 && !isToday ? 'missed' : ''}">
+        ${count > 0 && isPast ? '✓' : isToday ? '◉' : isFuture ? '' : '○'}
+      </div>
+      <div class="week-day-label">${DAYS[i]}</div>
+    `;
+    col.onclick = () => openDayModal(dStr, count);
+    container.appendChild(col);
+  }
+  const sub = document.getElementById('weekStreakSub');
+  if (sub) sub.textContent = `${activeDays} / 7 days active this week`;
+}
+
+function renderWeekBars() {
+  const barsEl = document.getElementById('weekBars');
+  const labelsEl = document.getElementById('weekBarLabels');
+  if (!barsEl || !labelsEl) return;
+  barsEl.innerHTML = ''; labelsEl.innerHTML = '';
+  const weekData = getWeekData();
+  const maxCount = Math.max(...weekData.map(d => d.count), 1);
+  weekData.forEach(d => {
+    const barHeight = Math.max(Math.round((d.count / maxCount) * 54), d.count > 0 ? 6 : 2);
+    const col = document.createElement('div');
+    col.className = 'week-bar-col';
+    col.innerHTML = `
+      <div class="week-bar-count">${d.count || ''}</div>
+      <div class="week-bar-fill ${d.isToday ? 'today-bar' : ''}" style="height:${barHeight}px;" title="${d.date}: ${d.count} solved" onclick="openDayModal('${d.date}',${d.count})"></div>
+    `;
+    barsEl.appendChild(col);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'week-bar-col';
+    lbl.innerHTML = `<div class="week-bar-label" style="font-size:10px;color:${d.isToday ? 'var(--accent3)' : 'var(--text3)'}">${d.label}</div>`;
+    labelsEl.appendChild(lbl);
+  });
+  const total = weekData.reduce((s,d) => s+d.count, 0);
+  const best = Math.max(...weekData.map(d => d.count));
+  const avg = (total / 7).toFixed(1);
+  const wt = document.getElementById('weekTotal');
+  const wb = document.getElementById('weekBest');
+  const wa = document.getElementById('weekAvg');
+  if (wt) wt.textContent = total;
+  if (wb) wb.textContent = best;
+  if (wa) wa.textContent = avg;
+}
+
+function renderMonthCalendar() {
+  const grid = document.getElementById('monthGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const year = calendarMonth.getFullYear();
+  const month = calendarMonth.getMonth();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const title = document.getElementById('monthTitle');
+  if (title) title.textContent = monthNames[month] + ' ' + year;
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  DAYS.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'month-day-header';
+    h.textContent = d.slice(0,1);
+    grid.appendChild(h);
+  });
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const t = today();
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'month-day empty';
+    grid.appendChild(empty);
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const count = state.activity[dStr] || 0;
+    const isFuture = dStr > t;
+    const cell = document.createElement('div');
+    cell.className = 'month-day' + (isFuture ? ' future' : '') + (dStr === t ? ' today-cal' : '') + (count >= 3 ? ' has-activity-high' : count > 0 ? ' has-activity' : '');
+    cell.innerHTML = `<span style="font-size:10px">${day}</span>${count > 0 ? `<div class="month-day-count">${count}</div>` : ''}`;
+    if (!isFuture) cell.onclick = () => openDayModal(dStr, count);
+    grid.appendChild(cell);
+  }
+}
+
+function renderMonthStats() {
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const ms = getMonthSolvedCount(year, month);
+  const mad = getMonthActiveDays(year, month);
+  const mse = document.getElementById('monthSolved');
+  const made = document.getElementById('monthActiveDays');
+  if (mse) mse.textContent = ms;
+  if (made) made.textContent = mad;
+  const goalPct = Math.min(Math.round((ms/30)*100), 100);
+  const streakPct = Math.min(Math.round((mad/20)*100), 100);
+  const mgp = document.getElementById('monthGoalPct');
+  const mgb = document.getElementById('monthGoalBar');
+  const msgp = document.getElementById('monthStreakGoalPct');
+  const msb = document.getElementById('monthStreakBar');
+  if (mgp) mgp.textContent = goalPct + '%';
+  if (mgb) mgb.style.width = goalPct + '%';
+  if (msgp) msgp.textContent = streakPct + '%';
+  if (msb) msb.style.width = streakPct + '%';
+}
+
+function renderDaily() {
+  const container = document.getElementById('dailyProblems');
+  if (!container) return;
+  container.innerHTML = '';
+  const unsolved = [];
+  PATTERNS.forEach(p => p.questions.forEach(q => {
+    if (!state.solved[q.id] || state.solved[q.id].status !== 'done') unsolved.push({ q, patternName: p.name });
+  }));
+  const seed = new Date().toDateString();
+  let hash = 0;
+  for(let c of seed) hash = (hash * 31 + c.charCodeAt(0)) % Math.max(unsolved.length, 1);
+  const picks = [];
+  for (let i = 0; i < 3 && unsolved.length > 0; i++) picks.push(unsolved[(hash + i * 37) % unsolved.length]);
+  picks.forEach(({ q, patternName }) => {
+    const el = document.createElement('div');
+    el.className = 'daily-q';
+    el.innerHTML = `
+      <div class="daily-q-name">${q.name}</div>
+      <div class="daily-q-meta">
+        <span class="q-diff ${q.diff}" style="font-size:9px;padding:2px 6px;">${q.diff}</span>
+        <span class="daily-q-pattern">${patternName}</span>
+      </div>
+    `;
+    el.onclick = () => {
+      const pId = PATTERNS.find(p => p.questions.find(qq => qq.id === q.id))?.id;
+      openPatterns.add(pId); openModal(q.id, pId, null); renderPatterns();
+    };
+    container.appendChild(el);
+  });
+}
+
+function renderAchievements() {
+  const solved = getSolvedCount();
+  const streak = state.streak.current;
+  const check = (id, cond) => { const el = document.getElementById(id); if(el) el.classList.toggle('unlocked', cond); };
+  check('ach-first', solved >= 1);
+  check('ach-ten', solved >= 10);
+  check('ach-fifty', solved >= 50);
+  check('ach-hundred', solved >= 100);
+  check('ach-streak7', streak >= 7);
+  check('ach-streak30', streak >= 30);
+}
+
+function renderDiffBreakdown() {
+  const { easy, med, hard, tEasy, tMed, tHard } = getDiffCounts();
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.style.width = val + '%'; };
+  const setText = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  set('easyFill', tEasy ? (easy/tEasy*100) : 0);
+  set('medFill', tMed ? (med/tMed*100) : 0);
+  set('hardFill', tHard ? (hard/tHard*100) : 0);
+  setText('easyCount', easy+'/'+tEasy);
+  setText('medCount', med+'/'+tMed);
+  setText('hardCount', hard+'/'+tHard);
+}
+
+// ===================== CHECKLISTS =====================
+const DAILY_CHECKS = [
+  { id: 'dc1', label: 'Solve 3 problems today', tag: 'daily', color: 'var(--easy)' },
+  { id: 'dc2', label: 'Review 1 pattern concept', tag: 'daily', color: 'var(--accent)' },
+  { id: 'dc3', label: 'Watch 1 YT explanation', tag: 'daily', color: '#ff4444' },
+  { id: 'dc4', label: 'Write notes for solved problems', tag: 'daily', color: 'var(--accent4)' },
+  { id: 'dc5', label: 'Revisit 1 unsolved problem', tag: 'daily', color: 'var(--text3)' },
+];
+const WEEKLY_CHECKS = [
+  { id: 'wc1', label: 'Complete 1 full pattern section', tag: 'weekly', color: 'var(--easy)' },
+  { id: 'wc2', label: 'Solve 15+ problems this week', tag: 'weekly', color: 'var(--accent)' },
+  { id: 'wc3', label: 'Attempt at least 2 hard problems', tag: 'weekly', color: 'var(--hard)' },
+  { id: 'wc4', label: 'Review all revisit-marked problems', tag: 'weekly', color: 'var(--accent4)' },
+  { id: 'wc5', label: 'Maintain 5-day streak this week', tag: 'weekly', color: '#ff4444' },
+  { id: 'wc6', label: 'Read about 1 new algorithm topic', tag: 'weekly', color: 'var(--accent)' },
+];
+const MONTHLY_CHECKS = [
+  { id: 'mc1', label: 'Solve 30+ problems this month', tag: 'monthly', color: 'var(--easy)' },
+  { id: 'mc2', label: 'Complete 3 full pattern sections', tag: 'monthly', color: 'var(--accent)' },
+  { id: 'mc3', label: 'Maintain 20-day active streak', tag: 'monthly', color: 'var(--accent4)' },
+  { id: 'mc4', label: 'Do 2 full mock interviews', tag: 'monthly', color: 'var(--hard)' },
+  { id: 'mc5', label: 'Master Binary Search pattern completely', tag: 'monthly', color: 'var(--accent)' },
+  { id: 'mc6', label: 'Complete all easy problems', tag: 'monthly', color: 'var(--easy)' },
+  { id: 'mc7', label: 'Progress to next roadmap phase', tag: 'monthly', color: 'var(--accent2)' },
+];
+
+function getChecklistKey(type) {
+  const now = new Date();
+  if (type === 'daily') return 'cl-daily-' + today();
+  if (type === 'weekly') {
+    const d = new Date(now); d.setDate(d.getDate() - d.getDay());
+    return 'cl-weekly-' + d.toISOString().split('T')[0];
+  }
+  return 'cl-monthly-' + now.getFullYear() + '-' + (now.getMonth()+1);
+}
+
+function renderChecklists() {
+  const render = (containerId, items, type) => {
+    const c = document.getElementById(containerId);
+    if (!c) return;
+    const key = getChecklistKey(type);
+    if (!state.checklists[key]) state.checklists[key] = {};
+    c.innerHTML = '';
+    let done = 0;
+    items.forEach(item => {
+      const checked = !!state.checklists[key][item.id];
+      if (checked) done++;
+      const el = document.createElement('div');
+      el.className = 'checklist-item';
+      el.innerHTML = `
+        <div class="checklist-cb ${checked ? 'checked' : ''}" onclick="toggleChecklist('${key}','${item.id}','${containerId}','${type}')"></div>
+        <span class="checklist-label ${checked ? 'done-label' : ''}">${item.label}</span>
+        <span class="checklist-tag" style="background:rgba(108,99,255,0.15);color:${item.color}">${item.tag}</span>
+      `;
+      c.appendChild(el);
+    });
+    const total = items.length;
+    const pct = Math.round((done/total)*100);
+    const header = document.createElement('div');
+    header.style = 'font-size:11px;color:var(--text3);text-align:right;margin-top:8px;';
+    header.textContent = `${done}/${total} completed (${pct}%)`;
+    c.appendChild(header);
+  };
+  render('dailyChecklist', DAILY_CHECKS, 'daily');
+  render('weeklyChecklist', WEEKLY_CHECKS, 'weekly');
+  render('monthlyChecklist', MONTHLY_CHECKS, 'monthly');
+}
+
+function toggleChecklist(key, itemId, containerId, type) {
+  if (!state.checklists[key]) state.checklists[key] = {};
+  state.checklists[key][itemId] = !state.checklists[key][itemId];
+  save();
+  renderChecklists();
+}
+
+// ===================== DAY DETAIL MODAL =====================
+function openDayModal(dateStr, count) {
+  const items = getSolvedOnDate(dateStr);
+  const date = new Date(dateStr + 'T00:00:00');
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('dayModalTitle').textContent = date.toLocaleDateString('en-US', opts);
+  document.getElementById('dayModalSub').textContent = count > 0 ? `${count} problem${count !== 1 ? 's' : ''} solved on this day` : 'No problems solved on this day';
+  const content = document.getElementById('dayModalContent');
+  content.innerHTML = '';
+  if (items.length === 0) {
+    content.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">No problems recorded for this day.<br>Keep going — every day counts! 💪</div>`;
+  } else {
+    items.forEach(({ q, patternName }) => {
+      const el = document.createElement('div');
+      el.className = 'day-solved-item';
+      el.innerHTML = `
+        <span class="day-solved-check">✅</span>
+        <div style="flex:1">
+          <div class="day-solved-name">${q.name}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:3px;">
+            <span class="q-diff ${q.diff}" style="font-size:9px;padding:2px 7px;">${q.diff}</span>
+            <span class="day-solved-pattern">${patternName}</span>
+          </div>
+        </div>
+        ${q.lc ? `<a href="${q.lc}" target="_blank" class="q-link lc" style="font-size:10px;">LC</a>` : q.gfg ? `<a href="${q.gfg}" target="_blank" class="q-link gfg" style="font-size:10px;">GFG</a>` : ''}
+      `;
+      content.appendChild(el);
+    });
+  }
+  document.getElementById('dayModal').classList.add('show');
+}
+
+function closeDayModal() {
+  document.getElementById('dayModal').classList.remove('show');
+}
+
+document.getElementById('dayModal').addEventListener('click', function(e) {
+  if (e.target === this) closeDayModal();
+});
+
+// ===================== PROGRESS TABS =====================
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.progress-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.progress-panel').forEach(p => {
+    if (!p.id.endsWith('-cl')) p.classList.remove('active');
+  });
+  const panel = document.getElementById('panel-' + tabId);
+  if (panel) panel.classList.add('active');
+  if (tabId === 'weekly') { renderWeekBars(); }
+  if (tabId === 'monthly') { renderMonthCalendar(); renderMonthStats(); }
+}
+
+function switchChecklist(tabId, btn) {
+  btn.closest('.progress-panel').querySelectorAll('.progress-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const panels = ['panel-daily-cl','panel-weekly-cl','panel-monthly-cl'];
+  panels.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active'); });
+  const panel = document.getElementById('panel-' + tabId);
+  if (panel) panel.classList.add('active');
+}
+
+function changeMonth(dir) {
+  calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + dir, 1);
+  renderMonthCalendar();
+  renderMonthStats();
+}
+
+function toggleRoadmap(id, headerEl) {
+  const body = document.getElementById('roadmap-' + id);
+  if (!body) return;
+  const isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? 'block' : 'none';
+  const chevron = headerEl.querySelector('span:last-child');
+  if (chevron) chevron.textContent = isHidden ? '▲' : '▼';
+}
+
+// ===================== ACTIONS =====================
+function toggleQuestion(qId, patternId, event) {
+  event?.stopPropagation();
+  const cur = state.solved[qId]?.status;
+  if (cur === 'done') {
+    delete state.solved[qId];
+    showToast('Marked as unsolved');
+  } else {
+    state.solved[qId] = { status: 'done', date: today(), notes: state.solved[qId]?.notes || '' };
+    markActivity();
+    showToast('✅ Problem solved! Keep going!');
+  }
+  save(); renderAll();
+}
+
+function openModal(qId, patternId, event) {
+  event?.stopPropagation();
+  const pattern = PATTERNS.find(p => p.id === patternId);
+  const q = pattern?.questions.find(q => q.id === qId);
+  if (!q) return;
+  modalQ = { q, patternId };
+  document.getElementById('modalTitle').textContent = q.name;
+  document.getElementById('modalPattern').textContent = '📌 ' + pattern.name + ' · ' + q.diff.toUpperCase();
+  document.getElementById('modalNotes').value = state.solved[qId]?.notes || '';
+  const solveLink = q.lc || q.gfg || q.yt || '#';
+  document.getElementById('modalSolveLink').href = solveLink;
+  document.getElementById('modalSolveLink').textContent = q.lc ? 'Solve on LeetCode →' : q.gfg ? 'Solve on GFG →' : 'Watch on YouTube →';
+  document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active-status'));
+  const status = state.solved[qId]?.status;
+  if (status === 'done') document.querySelectorAll('.status-btn')[0].classList.add('active-status');
+  else if (status === 'revisit') document.querySelectorAll('.status-btn')[1].classList.add('active-status');
+  else document.querySelectorAll('.status-btn')[2].classList.add('active-status');
+  document.getElementById('modal').classList.add('show');
+}
+
+function setStatus(status, btn) {
+  if (!modalQ) return;
+  document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active-status'));
+  btn.classList.add('active-status');
+  const notes = document.getElementById('modalNotes').value;
+  if (status === 'clear') { delete state.solved[modalQ.q.id]; }
+  else {
+    if (!state.solved[modalQ.q.id]) state.solved[modalQ.q.id] = {};
+    state.solved[modalQ.q.id].status = status;
+    state.solved[modalQ.q.id].date = today();
+    state.solved[modalQ.q.id].notes = notes;
+    if (status === 'done') markActivity();
+  }
+  save(); renderAll();
+}
+
+function closeModal() {
+  if (modalQ) {
+    const notes = document.getElementById('modalNotes').value;
+    if (state.solved[modalQ.q.id]) state.solved[modalQ.q.id].notes = notes;
+    else if (notes) state.solved[modalQ.q.id] = { status: '', notes, date: today() };
+    save();
+  }
+  document.getElementById('modal').classList.remove('show');
+  modalQ = null;
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPatterns();
+}
+
+function handleSearch() {
+  currentSearch = document.getElementById('searchInput').value;
+  renderPatterns();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeDayModal(); }
+  if (e.key === '/' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+  }
+});
+
+PATTERNS.slice(0, 3).forEach(p => openPatterns.add(p.id));
+renderAll();
+</script>
+</body>
+</html>
