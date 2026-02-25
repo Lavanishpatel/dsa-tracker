@@ -1,4 +1,3 @@
-# dsa-tracker
 <div align="center">
 
 ```
@@ -14,7 +13,7 @@
 
 ### The most complete Data Structures & Algorithms habit tracker — built for serious coders.
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-6c63ff?style=for-the-badge)](https://lavanishpatel.github.io/dsa-tracker)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-6c63ff?style=for-the-badge)](https://Lavanishpatel.github.io/dsa-tracker)
 [![GitHub Stars](https://img.shields.io/github/stars/Lavanishpatel/dsa-tracker?style=for-the-badge&color=f7971e)](https://github.com/Lavanishpatel/dsa-tracker/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/Lavanishpatel/dsa-tracker?style=for-the-badge&color=43e97b)](https://github.com/Lavanishpatel/dsa-tracker/network/members)
 [![License](https://img.shields.io/badge/License-MIT-ff6584?style=for-the-badge)](LICENSE)
@@ -122,7 +121,7 @@ Think of it as your **personal coding gym** — with streaks, progress tracking,
 ## 🚀 Getting Started
 
 ### Option 1 — Use Online (Recommended)
-Just visit: **[lavanishpatel.github.io/dsa-tracker](https://lavanishpatel.github.io/dsa-tracker)**
+Just visit: **[Lavanishpatel.github.io/dsa-tracker](https://Lavanishpatel.github.io/dsa-tracker)**
 
 No installation. No account. Works instantly.
 
@@ -267,6 +266,6 @@ MIT License — use freely, credit appreciated.
 
 *If you're grinding LeetCode, this tracker is your best friend.*
 
-[![Visit Live](https://img.shields.io/badge/🚀_Visit_Live_Site-lavanishpatel.github.io/dsa--tracker-6c63ff?style=for-the-badge)](https://lavanishpatel.github.io/dsa-tracker)
+[![Visit Live](https://img.shields.io/badge/🚀_Visit_Live_Site-Lavanishpatel.github.io/dsa--tracker-6c63ff?style=for-the-badge)](https://Lavanishpatel.github.io/dsa-tracker)
 
 </div>
