@@ -346,6 +346,13 @@
   .q-link.gfg:hover { background: rgba(23,213,92,0.22); }
   .q-link.yt { background: rgba(255,0,0,0.12); color: #ff4444; border-color: rgba(255,0,0,0.2); }
   .q-link.yt:hover { background: rgba(255,0,0,0.22); }
+  .q-link.yt-sol {
+    background: rgba(255,0,0,0.15); color: #ff4444;
+    border-color: rgba(255,0,0,0.35);
+    display: flex; align-items: center; gap: 4px;
+    font-weight: 800; letter-spacing: 0;
+  }
+  .q-link.yt-sol:hover { background: rgba(255,0,0,0.3); box-shadow: 0 0 10px rgba(255,0,0,0.25); transform: scale(1.05); }
 
   /* RIGHT SIDEBAR */
   .right-sidebar {
@@ -1113,6 +1120,10 @@
     <textarea class="modal-notes" id="modalNotes" placeholder="Add notes, approach, time complexity..."></textarea>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+      <a class="btn" id="modalYTLink" href="#" target="_blank" style="background:rgba(255,0,0,0.15);color:#ff4444;border:1px solid rgba(255,0,0,0.35);display:flex;align-items:center;gap:6px;">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        Watch Solution
+      </a>
       <a class="btn btn-primary" id="modalSolveLink" href="#" target="_blank">Solve Problem →</a>
     </div>
   </div>
@@ -1152,18 +1163,18 @@ const PATTERNS = [
     color: '#6c63ff',
     ytLink: 'https://www.youtube.com/watch?v=On03HWe2tZM',
     questions: [
-      { id: 'tp1', name: 'Pair with Target Sum', diff: 'easy', lc: 'https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/' },
-      { id: 'tp2', name: 'Rearrange 0s and 1s', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/segregate-0s-and-1s5106/1' },
-      { id: 'tp3', name: 'Remove Duplicates', diff: 'easy', lc: 'https://leetcode.com/problems/remove-duplicates-from-sorted-array/' },
-      { id: 'tp4', name: 'Squaring a Sorted Array', diff: 'easy', lc: 'https://leetcode.com/problems/squares-of-a-sorted-array/' },
-      { id: 'tp5', name: 'Triplet Sum to Zero (3Sum)', diff: 'medium', lc: 'https://leetcode.com/problems/3sum/' },
-      { id: 'tp6', name: 'Triplet Sum Close to Target', diff: 'medium', lc: 'https://leetcode.com/problems/3sum-closest/' },
-      { id: 'tp7', name: 'Triplets with Smaller Sum', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/count-triplets-with-sum-smaller-than-x5549/1' },
-      { id: 'tp8', name: 'Subarray Product Less Than K', diff: 'medium', lc: 'https://leetcode.com/problems/subarray-product-less-than-k/' },
-      { id: 'tp9', name: 'Dutch National Flag (Sort Colors)', diff: 'medium', lc: 'https://leetcode.com/problems/sort-colors/' },
-      { id: 'tp10', name: 'Quadruple Sum to Target (4Sum)', diff: 'medium', lc: 'https://leetcode.com/problems/4sum/' },
-      { id: 'tp11', name: 'Comparing Strings with Backspaces', diff: 'medium', lc: 'https://leetcode.com/problems/backspace-string-compare/' },
-      { id: 'tp12', name: 'Minimum Window Sort', diff: 'medium', lc: 'https://leetcode.com/problems/shortest-unsorted-continuous-subarray/' },
+      { id: 'tp1', name: 'Pair with Target Sum', diff: 'easy', lc: 'https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/', yt: 'https://www.youtube.com/watch?v=cQ1Oz4ckceM' },
+      { id: 'tp2', name: 'Rearrange 0s and 1s', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/segregate-0s-and-1s5106/1', yt: 'https://www.youtube.com/watch?v=tp8JIuCXBaU' },
+      { id: 'tp3', name: 'Remove Duplicates', diff: 'easy', lc: 'https://leetcode.com/problems/remove-duplicates-from-sorted-array/', yt: 'https://www.youtube.com/watch?v=DEJAZBq0FDA' },
+      { id: 'tp4', name: 'Squaring a Sorted Array', diff: 'easy', lc: 'https://leetcode.com/problems/squares-of-a-sorted-array/', yt: 'https://www.youtube.com/watch?v=FPCZsG_AkUg' },
+      { id: 'tp5', name: 'Triplet Sum to Zero (3Sum)', diff: 'medium', lc: 'https://leetcode.com/problems/3sum/', yt: 'https://www.youtube.com/watch?v=jzZsG8n2R9A' },
+      { id: 'tp6', name: 'Triplet Sum Close to Target', diff: 'medium', lc: 'https://leetcode.com/problems/3sum-closest/', yt: 'https://www.youtube.com/watch?v=qBr2hq4daWE' },
+      { id: 'tp7', name: 'Triplets with Smaller Sum', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/count-triplets-with-sum-smaller-than-x5549/1', yt: 'https://www.youtube.com/watch?v=On03HWe2tZM' },
+      { id: 'tp8', name: 'Subarray Product Less Than K', diff: 'medium', lc: 'https://leetcode.com/problems/subarray-product-less-than-k/', yt: 'https://www.youtube.com/watch?v=zvlOwbOBFkc' },
+      { id: 'tp9', name: 'Dutch National Flag (Sort Colors)', diff: 'medium', lc: 'https://leetcode.com/problems/sort-colors/', yt: 'https://www.youtube.com/watch?v=tp8JIuCXBaU' },
+      { id: 'tp10', name: 'Quadruple Sum to Target (4Sum)', diff: 'medium', lc: 'https://leetcode.com/problems/4sum/', yt: 'https://www.youtube.com/watch?v=EYeR-_1NRlQ' },
+      { id: 'tp11', name: 'Comparing Strings with Backspaces', diff: 'medium', lc: 'https://leetcode.com/problems/backspace-string-compare/', yt: 'https://www.youtube.com/watch?v=k2qrymM_DOo' },
+      { id: 'tp12', name: 'Minimum Window Sort', diff: 'medium', lc: 'https://leetcode.com/problems/shortest-unsorted-continuous-subarray/', yt: 'https://www.youtube.com/watch?v=Y2D3wMM1sr4' },
     ]
   },
   {
@@ -1171,14 +1182,14 @@ const PATTERNS = [
     color: '#ff6584',
     ytLink: 'https://www.youtube.com/watch?v=gBTe7lFR3vc',
     questions: [
-      { id: 'fs1', name: 'LinkedList Cycle Detection', diff: 'easy', lc: 'https://leetcode.com/problems/linked-list-cycle/' },
-      { id: 'fs2', name: 'Start of LinkedList Cycle', diff: 'medium', lc: 'https://leetcode.com/problems/linked-list-cycle-ii/' },
-      { id: 'fs3', name: 'Happy Number', diff: 'medium', lc: 'https://leetcode.com/problems/happy-number/' },
-      { id: 'fs4', name: 'Find Duplicate Number', diff: 'medium', lc: 'https://leetcode.com/problems/find-the-duplicate-number/' },
-      { id: 'fs5', name: 'Middle of the LinkedList', diff: 'easy', lc: 'https://leetcode.com/problems/middle-of-the-linked-list/' },
-      { id: 'fs6', name: 'Palindrome LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/palindrome-linked-list/' },
-      { id: 'fs7', name: 'Rearrange a LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/reorder-list/' },
-      { id: 'fs8', name: 'Cycle in a Circular Array', diff: 'hard', lc: 'https://leetcode.com/problems/circular-array-loop/' },
+      { id: 'fs1', name: 'LinkedList Cycle Detection', diff: 'easy', lc: 'https://leetcode.com/problems/linked-list-cycle/', yt: 'https://www.youtube.com/watch?v=wiOo4DC5GGA' },
+      { id: 'fs2', name: 'Start of LinkedList Cycle', diff: 'medium', lc: 'https://leetcode.com/problems/linked-list-cycle-ii/', yt: 'https://www.youtube.com/watch?v=QfbOhn0WZ88' },
+      { id: 'fs3', name: 'Happy Number', diff: 'medium', lc: 'https://leetcode.com/problems/happy-number/', yt: 'https://www.youtube.com/watch?v=ljz85bxOYJ0' },
+      { id: 'fs4', name: 'Find Duplicate Number', diff: 'medium', lc: 'https://leetcode.com/problems/find-the-duplicate-number/', yt: 'https://www.youtube.com/watch?v=wjYnzkAhcNk' },
+      { id: 'fs5', name: 'Middle of the LinkedList', diff: 'easy', lc: 'https://leetcode.com/problems/middle-of-the-linked-list/', yt: 'https://www.youtube.com/watch?v=A2_ldqM4QcY' },
+      { id: 'fs6', name: 'Palindrome LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/palindrome-linked-list/', yt: 'https://www.youtube.com/watch?v=yOzXms1J6Nk' },
+      { id: 'fs7', name: 'Rearrange a LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/reorder-list/', yt: 'https://www.youtube.com/watch?v=S5bfdUTrKLM' },
+      { id: 'fs8', name: 'Cycle in a Circular Array', diff: 'hard', lc: 'https://leetcode.com/problems/circular-array-loop/', yt: 'https://www.youtube.com/watch?v=gBTe7lFR3vc' },
     ]
   },
   {
@@ -1186,17 +1197,17 @@ const PATTERNS = [
     color: '#43e97b',
     ytLink: 'https://www.youtube.com/watch?v=MK-NZ4hN7rs',
     questions: [
-      { id: 'sw1', name: 'Maximum Sum Subarray of Size K', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/max-sum-subarray-of-size-k5313/1' },
-      { id: 'sw2', name: 'Minimum Size Subarray Sum', diff: 'easy', lc: 'https://leetcode.com/problems/minimum-size-subarray-sum/' },
-      { id: 'sw3', name: 'Longest Substring with K Distinct Chars', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/longest-k-unique-characters-substring0853/1' },
-      { id: 'sw4', name: 'Fruits into Baskets', diff: 'medium', lc: 'https://leetcode.com/problems/fruit-into-baskets/' },
-      { id: 'sw5', name: 'Longest Substring Without Repeating', diff: 'hard', lc: 'https://leetcode.com/problems/longest-substring-without-repeating-characters/' },
-      { id: 'sw6', name: 'Longest Repeating Char Replacement', diff: 'hard', lc: 'https://leetcode.com/problems/longest-repeating-character-replacement/' },
-      { id: 'sw7', name: 'Max Consecutive Ones III', diff: 'hard', lc: 'https://leetcode.com/problems/max-consecutive-ones-iii/' },
-      { id: 'sw8', name: 'Minimum Window Substring', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-window-substring/' },
-      { id: 'sw9', name: 'Permutation in a String', diff: 'hard', lc: 'https://leetcode.com/problems/permutation-in-string/' },
-      { id: 'sw10', name: 'Find All Anagrams in a String', diff: 'hard', lc: 'https://leetcode.com/problems/find-all-anagrams-in-a-string/' },
-      { id: 'sw11', name: 'Substring with Concatenation of All Words', diff: 'hard', lc: 'https://leetcode.com/problems/substring-with-concatenation-of-all-words/' },
+      { id: 'sw1', name: 'Maximum Sum Subarray of Size K', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/max-sum-subarray-of-size-k5313/1', yt: 'https://www.youtube.com/watch?v=1pkOgXD63yU' },
+      { id: 'sw2', name: 'Minimum Size Subarray Sum', diff: 'easy', lc: 'https://leetcode.com/problems/minimum-size-subarray-sum/', yt: 'https://www.youtube.com/watch?v=aYqYMIqZx5s' },
+      { id: 'sw3', name: 'Longest Substring with K Distinct Chars', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/longest-k-unique-characters-substring0853/1', yt: 'https://www.youtube.com/watch?v=Lav6St0W_pQ' },
+      { id: 'sw4', name: 'Fruits into Baskets', diff: 'medium', lc: 'https://leetcode.com/problems/fruit-into-baskets/', yt: 'https://www.youtube.com/watch?v=yYtaV0G3mWQ' },
+      { id: 'sw5', name: 'Longest Substring Without Repeating', diff: 'hard', lc: 'https://leetcode.com/problems/longest-substring-without-repeating-characters/', yt: 'https://www.youtube.com/watch?v=wiGpTwVuZe0' },
+      { id: 'sw6', name: 'Longest Repeating Char Replacement', diff: 'hard', lc: 'https://leetcode.com/problems/longest-repeating-character-replacement/', yt: 'https://www.youtube.com/watch?v=gqXU1UyA8pk' },
+      { id: 'sw7', name: 'Max Consecutive Ones III', diff: 'hard', lc: 'https://leetcode.com/problems/max-consecutive-ones-iii/', yt: 'https://www.youtube.com/watch?v=NLo-JiGlYKc' },
+      { id: 'sw8', name: 'Minimum Window Substring', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-window-substring/', yt: 'https://www.youtube.com/watch?v=jSto0O4AJbM' },
+      { id: 'sw9', name: 'Permutation in a String', diff: 'hard', lc: 'https://leetcode.com/problems/permutation-in-string/', yt: 'https://www.youtube.com/watch?v=UbyhOgBN834' },
+      { id: 'sw10', name: 'Find All Anagrams in a String', diff: 'hard', lc: 'https://leetcode.com/problems/find-all-anagrams-in-a-string/', yt: 'https://www.youtube.com/watch?v=fYgU6Bi2fRg' },
+      { id: 'sw11', name: 'Substring with Concatenation of All Words', diff: 'hard', lc: 'https://leetcode.com/problems/substring-with-concatenation-of-all-words/', yt: 'https://www.youtube.com/watch?v=MK-NZ4hN7rs' },
     ]
   },
   {
@@ -1204,12 +1215,12 @@ const PATTERNS = [
     color: '#f7971e',
     ytLink: 'https://www.youtube.com/watch?v=86CQq3pKSUw',
     questions: [
-      { id: 'ka1', name: 'Maximum Subarray Sum', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-subarray/' },
-      { id: 'ka2', name: 'Minimum Subarray Sum', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/smallest-sum-contiguous-subarray/1' },
-      { id: 'ka3', name: 'Maximum Product Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-product-subarray/' },
-      { id: 'ka4', name: 'Max Subarray Sum with One Deletion', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/' },
-      { id: 'ka5', name: 'Maximum Absolute Sum of Any Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-absolute-sum-of-any-subarray/' },
-      { id: 'ka6', name: 'Maximum Sum Circular Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-sum-circular-subarray/' },
+      { id: 'ka1', name: 'Maximum Subarray Sum', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-subarray/', yt: 'https://www.youtube.com/watch?v=5WZl3MMT0Eg' },
+      { id: 'ka2', name: 'Minimum Subarray Sum', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/smallest-sum-contiguous-subarray/1', yt: 'https://www.youtube.com/watch?v=86CQq3pKSUw' },
+      { id: 'ka3', name: 'Maximum Product Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-product-subarray/', yt: 'https://www.youtube.com/watch?v=lXVy6YWFcRM' },
+      { id: 'ka4', name: 'Max Subarray Sum with One Deletion', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/', yt: 'https://www.youtube.com/watch?v=86CQq3pKSUw' },
+      { id: 'ka5', name: 'Maximum Absolute Sum of Any Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-absolute-sum-of-any-subarray/', yt: 'https://www.youtube.com/watch?v=86CQq3pKSUw' },
+      { id: 'ka6', name: 'Maximum Sum Circular Subarray', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-sum-circular-subarray/', yt: 'https://www.youtube.com/watch?v=Q1TYVUEr-wY' },
     ]
   },
   {
@@ -1217,12 +1228,12 @@ const PATTERNS = [
     color: '#a29bfe',
     ytLink: 'https://www.youtube.com/watch?v=7pJo_rM0z_s',
     questions: [
-      { id: 'ps1', name: 'Subarray Sum Equals K', diff: 'easy', lc: 'https://leetcode.com/problems/subarray-sum-equals-k/' },
-      { id: 'ps2', name: 'Find Pivot Index', diff: 'easy', lc: 'https://leetcode.com/problems/find-pivot-index/' },
-      { id: 'ps3', name: 'Subarray Sums Divisible by K', diff: 'medium', lc: 'https://leetcode.com/problems/subarray-sums-divisible-by-k/' },
-      { id: 'ps4', name: 'Contiguous Array', diff: 'medium', lc: 'https://leetcode.com/problems/contiguous-array/' },
-      { id: 'ps5', name: 'Shortest Subarray With Sum ≥ K', diff: 'hard', lc: 'https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/' },
-      { id: 'ps6', name: 'Count of Range Sum', diff: 'hard', lc: 'https://leetcode.com/problems/count-of-range-sum/' },
+      { id: 'ps1', name: 'Subarray Sum Equals K', diff: 'easy', lc: 'https://leetcode.com/problems/subarray-sum-equals-k/', yt: 'https://www.youtube.com/watch?v=fFVZt-6sgyo' },
+      { id: 'ps2', name: 'Find Pivot Index', diff: 'easy', lc: 'https://leetcode.com/problems/find-pivot-index/', yt: 'https://www.youtube.com/watch?v=u89i60lYx54' },
+      { id: 'ps3', name: 'Subarray Sums Divisible by K', diff: 'medium', lc: 'https://leetcode.com/problems/subarray-sums-divisible-by-k/', yt: 'https://www.youtube.com/watch?v=u89i60lYx54' },
+      { id: 'ps4', name: 'Contiguous Array', diff: 'medium', lc: 'https://leetcode.com/problems/contiguous-array/', yt: 'https://www.youtube.com/watch?v=agB1LyObUNE' },
+      { id: 'ps5', name: 'Shortest Subarray With Sum ≥ K', diff: 'hard', lc: 'https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/', yt: 'https://www.youtube.com/watch?v=7pJo_rM0z_s' },
+      { id: 'ps6', name: 'Count of Range Sum', diff: 'hard', lc: 'https://leetcode.com/problems/count-of-range-sum/', yt: 'https://www.youtube.com/watch?v=7pJo_rM0z_s' },
     ]
   },
   {
@@ -1230,11 +1241,11 @@ const PATTERNS = [
     color: '#fd79a8',
     ytLink: 'https://www.youtube.com/watch?v=qKczfGUrFY4',
     questions: [
-      { id: 'mi1', name: 'Merge Intervals', diff: 'medium', lc: 'https://leetcode.com/problems/merge-intervals/' },
-      { id: 'mi2', name: 'Insert Interval', diff: 'medium', lc: 'https://leetcode.com/problems/insert-interval/' },
-      { id: 'mi3', name: 'Intervals Intersection', diff: 'medium', lc: 'https://leetcode.com/problems/interval-list-intersections/' },
-      { id: 'mi4', name: 'Minimum Meeting Rooms', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/attend-all-meetings-ii/1' },
-      { id: 'mi5', name: 'Maximum CPU Load', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/maximum-cpu-load-from-the-given-list-of-jobs/' },
+      { id: 'mi1', name: 'Merge Intervals', diff: 'medium', lc: 'https://leetcode.com/problems/merge-intervals/', yt: 'https://www.youtube.com/watch?v=44H3cEC2fFM' },
+      { id: 'mi2', name: 'Insert Interval', diff: 'medium', lc: 'https://leetcode.com/problems/insert-interval/', yt: 'https://www.youtube.com/watch?v=A8NUOmlwOlM' },
+      { id: 'mi3', name: 'Intervals Intersection', diff: 'medium', lc: 'https://leetcode.com/problems/interval-list-intersections/', yt: 'https://www.youtube.com/watch?v=Qh8ZjL1RpLI' },
+      { id: 'mi4', name: 'Minimum Meeting Rooms', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/attend-all-meetings-ii/1', yt: 'https://www.youtube.com/watch?v=FdzJmTx9-Ks' },
+      { id: 'mi5', name: 'Maximum CPU Load', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/maximum-cpu-load-from-the-given-list-of-jobs/', yt: 'https://www.youtube.com/watch?v=qKczfGUrFY4' },
     ]
   },
   {
@@ -1242,12 +1253,12 @@ const PATTERNS = [
     color: '#55efc4',
     ytLink: 'https://www.youtube.com/watch?v=JfinxytTYFQ',
     questions: [
-      { id: 'cs1', name: 'Cyclic Sort', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/sort-an-array-which-contain-1-to-n-values-in-on-using-cycle-sort/' },
-      { id: 'cs2', name: 'Find the Missing Number', diff: 'easy', lc: 'https://leetcode.com/problems/missing-number/' },
-      { id: 'cs3', name: 'Find all Missing Numbers', diff: 'easy', lc: 'https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/' },
-      { id: 'cs4', name: 'Find the Duplicate Number', diff: 'easy', lc: 'https://leetcode.com/problems/find-the-duplicate-number/' },
-      { id: 'cs5', name: 'Find all Duplicate Numbers', diff: 'easy', lc: 'https://leetcode.com/problems/find-all-duplicates-in-an-array/' },
-      { id: 'cs6', name: 'First Missing Positive', diff: 'medium', lc: 'https://leetcode.com/problems/first-missing-positive/' },
+      { id: 'cs1', name: 'Cyclic Sort', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/sort-an-array-which-contain-1-to-n-values-in-on-using-cycle-sort/', yt: 'https://www.youtube.com/watch?v=JfinxytTYFQ' },
+      { id: 'cs2', name: 'Find the Missing Number', diff: 'easy', lc: 'https://leetcode.com/problems/missing-number/', yt: 'https://www.youtube.com/watch?v=bfknu7Em6lk' },
+      { id: 'cs3', name: 'Find all Missing Numbers', diff: 'easy', lc: 'https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/', yt: 'https://www.youtube.com/watch?v=8i-f24YFWC4' },
+      { id: 'cs4', name: 'Find the Duplicate Number', diff: 'easy', lc: 'https://leetcode.com/problems/find-the-duplicate-number/', yt: 'https://www.youtube.com/watch?v=wjYnzkAhcNk' },
+      { id: 'cs5', name: 'Find all Duplicate Numbers', diff: 'easy', lc: 'https://leetcode.com/problems/find-all-duplicates-in-an-array/', yt: 'https://www.youtube.com/watch?v=7cZBorMaZ1o' },
+      { id: 'cs6', name: 'First Missing Positive', diff: 'medium', lc: 'https://leetcode.com/problems/first-missing-positive/', yt: 'https://www.youtube.com/watch?v=8g78yfzMlao' },
     ]
   },
   {
@@ -1255,12 +1266,12 @@ const PATTERNS = [
     color: '#74b9ff',
     ytLink: 'https://www.youtube.com/watch?v=G0_I-ZF0S38',
     questions: [
-      { id: 'll1', name: 'Reverse a LinkedList', diff: 'easy', lc: 'https://leetcode.com/problems/reverse-linked-list/' },
-      { id: 'll2', name: 'Reverse a Sub-list', diff: 'medium', lc: 'https://leetcode.com/problems/reverse-linked-list-ii/' },
-      { id: 'll3', name: 'Reverse List in Pairs', diff: 'medium', lc: 'https://leetcode.com/problems/swap-nodes-in-pairs/' },
-      { id: 'll4', name: 'Reverse every K-element Sub-list', diff: 'hard', lc: 'https://leetcode.com/problems/reverse-nodes-in-k-group/' },
-      { id: 'll5', name: 'Reverse Nodes in Even Length Groups', diff: 'hard', lc: 'https://leetcode.com/problems/reverse-nodes-in-even-length-groups/' },
-      { id: 'll6', name: 'Rotate a LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/rotate-list/' },
+      { id: 'll1', name: 'Reverse a LinkedList', diff: 'easy', lc: 'https://leetcode.com/problems/reverse-linked-list/', yt: 'https://www.youtube.com/watch?v=G0_I-ZF0S38' },
+      { id: 'll2', name: 'Reverse a Sub-list', diff: 'medium', lc: 'https://leetcode.com/problems/reverse-linked-list-ii/', yt: 'https://www.youtube.com/watch?v=RF_M9tX4Eag' },
+      { id: 'll3', name: 'Reverse List in Pairs', diff: 'medium', lc: 'https://leetcode.com/problems/swap-nodes-in-pairs/', yt: 'https://www.youtube.com/watch?v=o811TZLAWOo' },
+      { id: 'll4', name: 'Reverse every K-element Sub-list', diff: 'hard', lc: 'https://leetcode.com/problems/reverse-nodes-in-k-group/', yt: 'https://www.youtube.com/watch?v=1UOPsfP85V4' },
+      { id: 'll5', name: 'Reverse Nodes in Even Length Groups', diff: 'hard', lc: 'https://leetcode.com/problems/reverse-nodes-in-even-length-groups/', yt: 'https://www.youtube.com/watch?v=G0_I-ZF0S38' },
+      { id: 'll6', name: 'Rotate a LinkedList', diff: 'medium', lc: 'https://leetcode.com/problems/rotate-list/', yt: 'https://www.youtube.com/watch?v=UcGtPs2LE_c' },
     ]
   },
   {
@@ -1268,14 +1279,14 @@ const PATTERNS = [
     color: '#e17055',
     ytLink: 'https://www.youtube.com/watch?v=GYptUgnIM_I',
     questions: [
-      { id: 'st1', name: 'Remove Adjacent Duplicates in String', diff: 'easy', lc: 'https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/' },
-      { id: 'st2', name: 'Valid Parentheses', diff: 'easy', lc: 'https://leetcode.com/problems/valid-parentheses/' },
-      { id: 'st3', name: 'Next Greater Element II', diff: 'easy', lc: 'https://leetcode.com/problems/next-greater-element-ii/' },
-      { id: 'st4', name: 'Daily Temperatures', diff: 'easy', lc: 'https://leetcode.com/problems/daily-temperatures/' },
-      { id: 'st5', name: 'Remove Nodes From Linked List', diff: 'easy', lc: 'https://leetcode.com/problems/remove-nodes-from-linked-list/' },
-      { id: 'st6', name: 'Remove All Adjacent Duplicates II', diff: 'medium', lc: 'https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/' },
-      { id: 'st7', name: 'Simplify Path', diff: 'medium', lc: 'https://leetcode.com/problems/simplify-path/' },
-      { id: 'st8', name: 'Remove K Digits', diff: 'hard', lc: 'https://leetcode.com/problems/remove-k-digits/' },
+      { id: 'st1', name: 'Remove Adjacent Duplicates in String', diff: 'easy', lc: 'https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/', yt: 'https://www.youtube.com/watch?v=4StBFMZBOBk' },
+      { id: 'st2', name: 'Valid Parentheses', diff: 'easy', lc: 'https://leetcode.com/problems/valid-parentheses/', yt: 'https://www.youtube.com/watch?v=WTzjTskDFMg' },
+      { id: 'st3', name: 'Next Greater Element II', diff: 'easy', lc: 'https://leetcode.com/problems/next-greater-element-ii/', yt: 'https://www.youtube.com/watch?v=68a1Dc_qVq4' },
+      { id: 'st4', name: 'Daily Temperatures', diff: 'easy', lc: 'https://leetcode.com/problems/daily-temperatures/', yt: 'https://www.youtube.com/watch?v=cTBiBSnjO3c' },
+      { id: 'st5', name: 'Remove Nodes From Linked List', diff: 'easy', lc: 'https://leetcode.com/problems/remove-nodes-from-linked-list/', yt: 'https://www.youtube.com/watch?v=GYptUgnIM_I' },
+      { id: 'st6', name: 'Remove All Adjacent Duplicates II', diff: 'medium', lc: 'https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/', yt: 'https://www.youtube.com/watch?v=4StBFMZBOBk' },
+      { id: 'st7', name: 'Simplify Path', diff: 'medium', lc: 'https://leetcode.com/problems/simplify-path/', yt: 'https://www.youtube.com/watch?v=qYlHrAKJfyA' },
+      { id: 'st8', name: 'Remove K Digits', diff: 'hard', lc: 'https://leetcode.com/problems/remove-k-digits/', yt: 'https://www.youtube.com/watch?v=cFabMOnJaq0' },
     ]
   },
   {
@@ -1283,10 +1294,10 @@ const PATTERNS = [
     color: '#fdcb6e',
     ytLink: 'https://www.youtube.com/watch?v=rvitJHLUMar',
     questions: [
-      { id: 'hm1', name: 'First Non-Repeating Character', diff: 'easy', lc: 'https://leetcode.com/problems/first-unique-character-in-a-string/' },
-      { id: 'hm2', name: 'Maximum Number of Balloons', diff: 'easy', lc: 'https://leetcode.com/problems/maximum-number-of-balloons/' },
-      { id: 'hm3', name: 'Longest Palindrome', diff: 'easy', lc: 'https://leetcode.com/problems/longest-palindrome/' },
-      { id: 'hm4', name: 'Ransom Note', diff: 'easy', lc: 'https://leetcode.com/problems/ransom-note/' },
+      { id: 'hm1', name: 'First Non-Repeating Character', diff: 'easy', lc: 'https://leetcode.com/problems/first-unique-character-in-a-string/', yt: 'https://www.youtube.com/watch?v=dm4-6gRiFKs' },
+      { id: 'hm2', name: 'Maximum Number of Balloons', diff: 'easy', lc: 'https://leetcode.com/problems/maximum-number-of-balloons/', yt: 'https://www.youtube.com/watch?v=rvitJHLUMar' },
+      { id: 'hm3', name: 'Longest Palindrome', diff: 'easy', lc: 'https://leetcode.com/problems/longest-palindrome/', yt: 'https://www.youtube.com/watch?v=_yLOdRR5rEM' },
+      { id: 'hm4', name: 'Ransom Note', diff: 'easy', lc: 'https://leetcode.com/problems/ransom-note/', yt: 'https://www.youtube.com/watch?v=Cka_Q6znFko' },
     ]
   },
   {
@@ -1294,24 +1305,24 @@ const PATTERNS = [
     color: '#6c63ff',
     ytLink: 'https://www.youtube.com/watch?v=GU7DpgHINWQ',
     questions: [
-      { id: 'bs1', name: 'Binary Search Basic', diff: 'easy', lc: 'https://leetcode.com/problems/binary-search/' },
-      { id: 'bs2', name: 'Upper Bound / Ceiling', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/ceil-in-a-sorted-array/1' },
-      { id: 'bs3', name: 'First and Last Position', diff: 'medium', lc: 'https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/' },
-      { id: 'bs4', name: 'Count Number of Occurrences', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/number-of-occurrence2259/1' },
-      { id: 'bs5', name: 'Peak Index in Mountain Array', diff: 'medium', lc: 'https://leetcode.com/problems/peak-index-in-a-mountain-array/' },
-      { id: 'bs6', name: 'Find Peak Element', diff: 'medium', lc: 'https://leetcode.com/problems/find-peak-element/' },
-      { id: 'bs7', name: 'Find Minimum in Rotated Sorted Array', diff: 'medium', lc: 'https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/' },
-      { id: 'bs8', name: 'Search in Rotated Sorted Array', diff: 'medium', lc: 'https://leetcode.com/problems/search-in-rotated-sorted-array/' },
-      { id: 'bs9', name: 'Koko Eating Bananas', diff: 'medium', lc: 'https://leetcode.com/problems/koko-eating-bananas/' },
-      { id: 'bs10', name: 'Min Days to Make M Bouquets', diff: 'medium', lc: 'https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/' },
-      { id: 'bs11', name: 'Aggressive Cows', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/aggressive-cows/1' },
-      { id: 'bs12', name: 'Book Allocation Problem', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/allocate-minimum-number-of-pages0937/1' },
-      { id: 'bs13', name: 'Split Array Largest Sum', diff: 'hard', lc: 'https://leetcode.com/problems/split-array-largest-sum/' },
-      { id: 'bs14', name: 'Capacity to Ship Packages in D Days', diff: 'medium', lc: 'https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/' },
-      { id: 'bs15', name: 'Search a 2D Matrix', diff: 'medium', lc: 'https://leetcode.com/problems/search-a-2d-matrix/' },
-      { id: 'bs16', name: 'Search 2D Matrix II', diff: 'hard', lc: 'https://leetcode.com/problems/search-a-2d-matrix-ii/' },
-      { id: 'bs17', name: 'Kth Smallest in Sorted Matrix', diff: 'medium', lc: 'https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/' },
-      { id: 'bs18', name: 'Median of Two Sorted Arrays', diff: 'hard', lc: 'https://leetcode.com/problems/median-of-two-sorted-arrays/' },
+      { id: 'bs1', name: 'Binary Search Basic', diff: 'easy', lc: 'https://leetcode.com/problems/binary-search/', yt: 'https://www.youtube.com/watch?v=P3YID7liBug' },
+      { id: 'bs2', name: 'Upper Bound / Ceiling', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/ceil-in-a-sorted-array/1', yt: 'https://www.youtube.com/watch?v=6zhGS79oQ4k' },
+      { id: 'bs3', name: 'First and Last Position', diff: 'medium', lc: 'https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/', yt: 'https://www.youtube.com/watch?v=bU-q1OJ0KWw' },
+      { id: 'bs4', name: 'Count Number of Occurrences', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/number-of-occurrence2259/1', yt: 'https://www.youtube.com/watch?v=6zhGS79oQ4k' },
+      { id: 'bs5', name: 'Peak Index in Mountain Array', diff: 'medium', lc: 'https://leetcode.com/problems/peak-index-in-a-mountain-array/', yt: 'https://www.youtube.com/watch?v=HtSuA80QTyo' },
+      { id: 'bs6', name: 'Find Peak Element', diff: 'medium', lc: 'https://leetcode.com/problems/find-peak-element/', yt: 'https://www.youtube.com/watch?v=HtSuA80QTyo' },
+      { id: 'bs7', name: 'Find Minimum in Rotated Sorted Array', diff: 'medium', lc: 'https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/', yt: 'https://www.youtube.com/watch?v=nIVW4P8b1VA' },
+      { id: 'bs8', name: 'Search in Rotated Sorted Array', diff: 'medium', lc: 'https://leetcode.com/problems/search-in-rotated-sorted-array/', yt: 'https://www.youtube.com/watch?v=r3pMQ8-Ad5s' },
+      { id: 'bs9', name: 'Koko Eating Bananas', diff: 'medium', lc: 'https://leetcode.com/problems/koko-eating-bananas/', yt: 'https://www.youtube.com/watch?v=U2SozAs9RzA' },
+      { id: 'bs10', name: 'Min Days to Make M Bouquets', diff: 'medium', lc: 'https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/', yt: 'https://www.youtube.com/watch?v=TXAuxeYBTdg' },
+      { id: 'bs11', name: 'Aggressive Cows', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/aggressive-cows/1', yt: 'https://www.youtube.com/watch?v=YTTdLgyqOLY' },
+      { id: 'bs12', name: 'Book Allocation Problem', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/allocate-minimum-number-of-pages0937/1', yt: 'https://www.youtube.com/watch?v=Z0hwjftStI4' },
+      { id: 'bs13', name: 'Split Array Largest Sum', diff: 'hard', lc: 'https://leetcode.com/problems/split-array-largest-sum/', yt: 'https://www.youtube.com/watch?v=thUd_WJn6wk' },
+      { id: 'bs14', name: 'Capacity to Ship Packages in D Days', diff: 'medium', lc: 'https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/', yt: 'https://www.youtube.com/watch?v=ER_oLmdc-nw' },
+      { id: 'bs15', name: 'Search a 2D Matrix', diff: 'medium', lc: 'https://leetcode.com/problems/search-a-2d-matrix/', yt: 'https://www.youtube.com/watch?v=Ber2pi2C0j0' },
+      { id: 'bs16', name: 'Search 2D Matrix II', diff: 'hard', lc: 'https://leetcode.com/problems/search-a-2d-matrix-ii/', yt: 'https://www.youtube.com/watch?v=dcTJRq27ALQ' },
+      { id: 'bs17', name: 'Kth Smallest in Sorted Matrix', diff: 'medium', lc: 'https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/', yt: 'https://www.youtube.com/watch?v=GU7DpgHINWQ' },
+      { id: 'bs18', name: 'Median of Two Sorted Arrays', diff: 'hard', lc: 'https://leetcode.com/problems/median-of-two-sorted-arrays/', yt: 'https://www.youtube.com/watch?v=q6IEA26hvXc' },
     ]
   },
   {
@@ -1319,21 +1330,21 @@ const PATTERNS = [
     color: '#fd79a8',
     ytLink: 'https://www.youtube.com/watch?v=t0Cq6tVNRBA',
     questions: [
-      { id: 'hp1', name: 'Kth Smallest Element', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1' },
-      { id: 'hp2', name: 'Kth Largest Element in Array', diff: 'medium', lc: 'https://leetcode.com/problems/kth-largest-element-in-an-array/' },
-      { id: 'hp3', name: 'Top K Frequent Elements', diff: 'medium', lc: 'https://leetcode.com/problems/top-k-frequent-elements/' },
-      { id: 'hp4', name: 'Top K Frequent Words', diff: 'medium', lc: 'https://leetcode.com/problems/top-k-frequent-words/' },
-      { id: 'hp5', name: 'K Closest Points to Origin', diff: 'medium', lc: 'https://leetcode.com/problems/k-closest-points-to-origin/' },
-      { id: 'hp6', name: 'Find K Closest Elements', diff: 'medium', lc: 'https://leetcode.com/problems/find-k-closest-elements/' },
-      { id: 'hp7', name: 'Merge K Sorted Arrays', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/merge-k-sorted-arrays/1' },
-      { id: 'hp8', name: 'Last Stone Weight', diff: 'easy', lc: 'https://leetcode.com/problems/last-stone-weight/' },
-      { id: 'hp9', name: 'Task Scheduler', diff: 'medium', lc: 'https://leetcode.com/problems/task-scheduler/' },
-      { id: 'hp10', name: 'Reorganize String', diff: 'medium', lc: 'https://leetcode.com/problems/reorganize-string/' },
-      { id: 'hp11', name: 'Min Refueling Stops', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-number-of-refueling-stops/' },
-      { id: 'hp12', name: 'IPO', diff: 'hard', lc: 'https://leetcode.com/problems/ipo/' },
-      { id: 'hp13', name: 'Course Scheduler 3', diff: 'hard', lc: 'https://leetcode.com/problems/course-schedule-iii/' },
-      { id: 'hp14', name: 'Find Median from Data Stream', diff: 'hard', lc: 'https://leetcode.com/problems/find-median-from-data-stream/' },
-      { id: 'hp15', name: 'Sliding Window Median', diff: 'hard', lc: 'https://leetcode.com/problems/sliding-window-median/' },
+      { id: 'hp1', name: 'Kth Smallest Element', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1', yt: 'https://www.youtube.com/watch?v=XEmy13g1Qxc' },
+      { id: 'hp2', name: 'Kth Largest Element in Array', diff: 'medium', lc: 'https://leetcode.com/problems/kth-largest-element-in-an-array/', yt: 'https://www.youtube.com/watch?v=XEmy13g1Qxc' },
+      { id: 'hp3', name: 'Top K Frequent Elements', diff: 'medium', lc: 'https://leetcode.com/problems/top-k-frequent-elements/', yt: 'https://www.youtube.com/watch?v=YPTqKIgVk-k' },
+      { id: 'hp4', name: 'Top K Frequent Words', diff: 'medium', lc: 'https://leetcode.com/problems/top-k-frequent-words/', yt: 'https://www.youtube.com/watch?v=dvlyDeMa6OU' },
+      { id: 'hp5', name: 'K Closest Points to Origin', diff: 'medium', lc: 'https://leetcode.com/problems/k-closest-points-to-origin/', yt: 'https://www.youtube.com/watch?v=rI2EBUEMfTk' },
+      { id: 'hp6', name: 'Find K Closest Elements', diff: 'medium', lc: 'https://leetcode.com/problems/find-k-closest-elements/', yt: 'https://www.youtube.com/watch?v=o-YDQzHoaKM' },
+      { id: 'hp7', name: 'Merge K Sorted Arrays', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/problems/merge-k-sorted-arrays/1', yt: 'https://www.youtube.com/watch?v=ptYUCjfNhJY' },
+      { id: 'hp8', name: 'Last Stone Weight', diff: 'easy', lc: 'https://leetcode.com/problems/last-stone-weight/', yt: 'https://www.youtube.com/watch?v=B-QCq4-oXO0' },
+      { id: 'hp9', name: 'Task Scheduler', diff: 'medium', lc: 'https://leetcode.com/problems/task-scheduler/', yt: 'https://www.youtube.com/watch?v=s8p8ukTyA2I' },
+      { id: 'hp10', name: 'Reorganize String', diff: 'medium', lc: 'https://leetcode.com/problems/reorganize-string/', yt: 'https://www.youtube.com/watch?v=2g_b1aYTHeg' },
+      { id: 'hp11', name: 'Min Refueling Stops', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-number-of-refueling-stops/', yt: 'https://www.youtube.com/watch?v=t0Cq6tVNRBA' },
+      { id: 'hp12', name: 'IPO', diff: 'hard', lc: 'https://leetcode.com/problems/ipo/', yt: 'https://www.youtube.com/watch?v=t0Cq6tVNRBA' },
+      { id: 'hp13', name: 'Course Scheduler 3', diff: 'hard', lc: 'https://leetcode.com/problems/course-schedule-iii/', yt: 'https://www.youtube.com/watch?v=8qlOdTr5Fxw' },
+      { id: 'hp14', name: 'Find Median from Data Stream', diff: 'hard', lc: 'https://leetcode.com/problems/find-median-from-data-stream/', yt: 'https://www.youtube.com/watch?v=itmhHWaHupI' },
+      { id: 'hp15', name: 'Sliding Window Median', diff: 'hard', lc: 'https://leetcode.com/problems/sliding-window-median/', yt: 'https://www.youtube.com/watch?v=t0Cq6tVNRBA' },
     ]
   },
   {
@@ -1345,12 +1356,12 @@ const PATTERNS = [
       { id: 'rb2', name: 'Check if String is Palindrome', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/palindrome-string0817/1', yt: 'https://www.youtube.com/watch?v=j4wjZqzhMqc' },
       { id: 'rb3', name: 'Check if Array is Sorted', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/check-if-an-array-is-sorted0701/1', yt: 'https://www.youtube.com/watch?v=-gC-QEdpvO4' },
       { id: 'rb4', name: 'Sum of Digits of a Number', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/sum-of-digits1742/1', yt: 'https://www.youtube.com/watch?v=-gC-QEdpvO4' },
-      { id: 'rb5', name: 'Remove All Occurrences of a Char', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/remove-all-occurrences-of-a-character-in-a-string/1' },
-      { id: 'rb6', name: 'Generate Parentheses', diff: 'medium', lc: 'https://leetcode.com/problems/generate-parentheses/' },
+      { id: 'rb5', name: 'Remove All Occurrences of a Char', diff: 'easy', gfg: 'https://www.geeksforgeeks.org/problems/remove-all-occurrences-of-a-character-in-a-string/1', yt: 'https://www.youtube.com/watch?v=j4wjZqzhMqc' },
+      { id: 'rb6', name: 'Generate Parentheses', diff: 'medium', lc: 'https://leetcode.com/problems/generate-parentheses/', yt: 'https://www.youtube.com/watch?v=s9fokUqJ76A' },
       { id: 'rb7', name: 'Letter Combinations of Phone Number', diff: 'medium', lc: 'https://leetcode.com/problems/letter-combinations-of-a-phone-number/', yt: 'https://www.youtube.com/watch?v=IKfIT6uFOcs' },
-      { id: 'rb8', name: 'Permutations', diff: 'medium', lc: 'https://leetcode.com/problems/permutations/' },
-      { id: 'rb9', name: 'Combination Sum', diff: 'medium', lc: 'https://leetcode.com/problems/combination-sum/' },
-      { id: 'rb10', name: 'Palindrome Partitioning', diff: 'medium', lc: 'https://leetcode.com/problems/palindrome-partitioning/' },
+      { id: 'rb8', name: 'Permutations', diff: 'medium', lc: 'https://leetcode.com/problems/permutations/', yt: 'https://www.youtube.com/watch?v=s7AvT7cGdSo' },
+      { id: 'rb9', name: 'Combination Sum', diff: 'medium', lc: 'https://leetcode.com/problems/combination-sum/', yt: 'https://www.youtube.com/watch?v=GBKI9VSKdGg' },
+      { id: 'rb10', name: 'Palindrome Partitioning', diff: 'medium', lc: 'https://leetcode.com/problems/palindrome-partitioning/', yt: 'https://www.youtube.com/watch?v=WBgsABoClE0' },
     ]
   },
   {
@@ -1358,11 +1369,11 @@ const PATTERNS = [
     color: '#55efc4',
     ytLink: 'https://www.youtube.com/watch?v=tWVWeAqZ0WU',
     questions: [
-      { id: 'gr1', name: 'Number of Islands', diff: 'easy', lc: 'https://leetcode.com/problems/number-of-islands/' },
-      { id: 'gr2', name: 'Flood Fill', diff: 'easy', lc: 'https://leetcode.com/problems/flood-fill/' },
-      { id: 'gr3', name: 'Number of Closed Islands', diff: 'easy', lc: 'https://leetcode.com/problems/number-of-closed-islands/' },
-      { id: 'gr4', name: 'Max Area of Island', diff: 'medium', lc: 'https://leetcode.com/problems/max-area-of-island/' },
-      { id: 'gr5', name: 'Surrounded Regions', diff: 'medium', lc: 'https://leetcode.com/problems/surrounded-regions/' },
+      { id: 'gr1', name: 'Number of Islands', diff: 'easy', lc: 'https://leetcode.com/problems/number-of-islands/', yt: 'https://www.youtube.com/watch?v=pV2kpPD66nE' },
+      { id: 'gr2', name: 'Flood Fill', diff: 'easy', lc: 'https://leetcode.com/problems/flood-fill/', yt: 'https://www.youtube.com/watch?v=C-2_uSRli8o' },
+      { id: 'gr3', name: 'Number of Closed Islands', diff: 'easy', lc: 'https://leetcode.com/problems/number-of-closed-islands/', yt: 'https://www.youtube.com/watch?v=tWVWeAqZ0WU' },
+      { id: 'gr4', name: 'Max Area of Island', diff: 'medium', lc: 'https://leetcode.com/problems/max-area-of-island/', yt: 'https://www.youtube.com/watch?v=iJGr1OtmH0c' },
+      { id: 'gr5', name: 'Surrounded Regions', diff: 'medium', lc: 'https://leetcode.com/problems/surrounded-regions/', yt: 'https://www.youtube.com/watch?v=9z2BunfoZ5Y' },
     ]
   },
   {
@@ -1370,11 +1381,11 @@ const PATTERNS = [
     color: '#74b9ff',
     ytLink: 'https://www.youtube.com/watch?v=REOH22Xwdkk',
     questions: [
-      { id: 'sub1', name: 'Subsets', diff: 'easy', lc: 'https://leetcode.com/problems/subsets/' },
-      { id: 'sub2', name: 'Subsets With Duplicates', diff: 'easy', lc: 'https://leetcode.com/problems/subsets-ii/' },
-      { id: 'sub3', name: 'Permutations II', diff: 'medium', lc: 'https://leetcode.com/problems/permutations-ii/' },
-      { id: 'sub4', name: 'Combination Sum II', diff: 'medium', lc: 'https://leetcode.com/problems/combination-sum-ii/' },
-      { id: 'sub5', name: 'Generalized Abbreviation', diff: 'hard', lc: 'https://leetcode.com/problems/generalized-abbreviation/' },
+      { id: 'sub1', name: 'Subsets', diff: 'easy', lc: 'https://leetcode.com/problems/subsets/', yt: 'https://www.youtube.com/watch?v=REOH22Xwdkk' },
+      { id: 'sub2', name: 'Subsets With Duplicates', diff: 'easy', lc: 'https://leetcode.com/problems/subsets-ii/', yt: 'https://www.youtube.com/watch?v=Vn2v6ajA7U0' },
+      { id: 'sub3', name: 'Permutations II', diff: 'medium', lc: 'https://leetcode.com/problems/permutations-ii/', yt: 'https://www.youtube.com/watch?v=qhBVWf0YafA' },
+      { id: 'sub4', name: 'Combination Sum II', diff: 'medium', lc: 'https://leetcode.com/problems/combination-sum-ii/', yt: 'https://www.youtube.com/watch?v=rSA3t6BDDwg' },
+      { id: 'sub5', name: 'Generalized Abbreviation', diff: 'hard', lc: 'https://leetcode.com/problems/generalized-abbreviation/', yt: 'https://www.youtube.com/watch?v=REOH22Xwdkk' },
     ]
   },
   {
@@ -1382,12 +1393,12 @@ const PATTERNS = [
     color: '#f7971e',
     ytLink: 'https://www.youtube.com/watch?v=lfQvPHGtu6Q',
     questions: [
-      { id: 'gr20-1', name: 'Valid Palindrome II', diff: 'easy', lc: 'https://leetcode.com/problems/valid-palindrome-ii/' },
-      { id: 'gr20-2', name: 'Maximum Length of Pair Chain', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-length-of-pair-chain/' },
-      { id: 'gr20-3', name: 'Min Add to Make Parentheses Valid', diff: 'medium', lc: 'https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/' },
-      { id: 'gr20-4', name: 'Remove Duplicate Letters', diff: 'medium', lc: 'https://leetcode.com/problems/remove-duplicate-letters/' },
-      { id: 'gr20-5', name: 'Largest Palindromic Number', diff: 'medium', lc: 'https://leetcode.com/problems/largest-palindromic-number/' },
-      { id: 'gr20-6', name: 'Removing Min and Max From Array', diff: 'medium', lc: 'https://leetcode.com/problems/removing-minimum-and-maximum-from-array/' },
+      { id: 'gr20-1', name: 'Valid Palindrome II', diff: 'easy', lc: 'https://leetcode.com/problems/valid-palindrome-ii/', yt: 'https://www.youtube.com/watch?v=JrxpPzrSzig' },
+      { id: 'gr20-2', name: 'Maximum Length of Pair Chain', diff: 'medium', lc: 'https://leetcode.com/problems/maximum-length-of-pair-chain/', yt: 'https://www.youtube.com/watch?v=lfQvPHGtu6Q' },
+      { id: 'gr20-3', name: 'Min Add to Make Parentheses Valid', diff: 'medium', lc: 'https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/', yt: 'https://www.youtube.com/watch?v=Upn33F5G0gY' },
+      { id: 'gr20-4', name: 'Remove Duplicate Letters', diff: 'medium', lc: 'https://leetcode.com/problems/remove-duplicate-letters/', yt: 'https://www.youtube.com/watch?v=wIy9ZgIsZTg' },
+      { id: 'gr20-5', name: 'Largest Palindromic Number', diff: 'medium', lc: 'https://leetcode.com/problems/largest-palindromic-number/', yt: 'https://www.youtube.com/watch?v=lfQvPHGtu6Q' },
+      { id: 'gr20-6', name: 'Removing Min and Max From Array', diff: 'medium', lc: 'https://leetcode.com/problems/removing-minimum-and-maximum-from-array/', yt: 'https://www.youtube.com/watch?v=lfQvPHGtu6Q' },
     ]
   },
   {
@@ -1395,12 +1406,12 @@ const PATTERNS = [
     color: '#e17055',
     ytLink: 'https://www.youtube.com/watch?v=cJ21moQpofY',
     questions: [
-      { id: 'dp1', name: '0/1 Knapsack', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/0-1-knapsack-problem-dp-10/' },
-      { id: 'dp2', name: 'Partition Equal Subset Sum', diff: 'medium', lc: 'https://leetcode.com/problems/partition-equal-subset-sum/' },
-      { id: 'dp3', name: 'Subset Sum', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/subset-sum-problem-dp-25/' },
-      { id: 'dp4', name: 'Minimum Subset Sum Difference', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/partition-a-set-into-two-subsets-such-that-the-difference-of-subset-sums-is-minimum/' },
-      { id: 'dp5', name: 'Target Sum', diff: 'medium', lc: 'https://leetcode.com/problems/target-sum/' },
-      { id: 'dp6', name: 'Last Stone Weight II', diff: 'medium', lc: 'https://leetcode.com/problems/last-stone-weight-ii/' },
+      { id: 'dp1', name: '0/1 Knapsack', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/0-1-knapsack-problem-dp-10/', yt: 'https://www.youtube.com/watch?v=GqOmJHQZivw' },
+      { id: 'dp2', name: 'Partition Equal Subset Sum', diff: 'medium', lc: 'https://leetcode.com/problems/partition-equal-subset-sum/', yt: 'https://www.youtube.com/watch?v=IsvocB5BJhw' },
+      { id: 'dp3', name: 'Subset Sum', diff: 'medium', gfg: 'https://www.geeksforgeeks.org/subset-sum-problem-dp-25/', yt: 'https://www.youtube.com/watch?v=_gPcYovP7wc' },
+      { id: 'dp4', name: 'Minimum Subset Sum Difference', diff: 'hard', gfg: 'https://www.geeksforgeeks.org/partition-a-set-into-two-subsets-such-that-the-difference-of-subset-sums-is-minimum/', yt: 'https://www.youtube.com/watch?v=GB7e6pMEqjI' },
+      { id: 'dp5', name: 'Target Sum', diff: 'medium', lc: 'https://leetcode.com/problems/target-sum/', yt: 'https://www.youtube.com/watch?v=g0npyaQtAQM' },
+      { id: 'dp6', name: 'Last Stone Weight II', diff: 'medium', lc: 'https://leetcode.com/problems/last-stone-weight-ii/', yt: 'https://www.youtube.com/watch?v=cJ21moQpofY' },
     ]
   },
   {
@@ -1408,10 +1419,10 @@ const PATTERNS = [
     color: '#6c63ff',
     ytLink: 'https://www.youtube.com/watch?v=oobqoCJlHA0',
     questions: [
-      { id: 'tr1', name: 'Implement Trie (Prefix Tree)', diff: 'medium', lc: 'https://leetcode.com/problems/implement-trie-prefix-tree/' },
-      { id: 'tr2', name: 'Design Add and Search Words Data Structure', diff: 'medium', lc: 'https://leetcode.com/problems/design-add-and-search-words-data-structure/' },
-      { id: 'tr3', name: 'Extra Characters in a String', diff: 'medium', lc: 'https://leetcode.com/problems/extra-characters-in-a-string/' },
-      { id: 'tr4', name: 'Search Suggestions System', diff: 'medium', lc: 'https://leetcode.com/problems/search-suggestions-system/' },
+      { id: 'tr1', name: 'Implement Trie (Prefix Tree)', diff: 'medium', lc: 'https://leetcode.com/problems/implement-trie-prefix-tree/', yt: 'https://www.youtube.com/watch?v=oobqoCJlHA0' },
+      { id: 'tr2', name: 'Design Add and Search Words Data Structure', diff: 'medium', lc: 'https://leetcode.com/problems/design-add-and-search-words-data-structure/', yt: 'https://www.youtube.com/watch?v=BTf05gs_8iU' },
+      { id: 'tr3', name: 'Extra Characters in a String', diff: 'medium', lc: 'https://leetcode.com/problems/extra-characters-in-a-string/', yt: 'https://www.youtube.com/watch?v=oobqoCJlHA0' },
+      { id: 'tr4', name: 'Search Suggestions System', diff: 'medium', lc: 'https://leetcode.com/problems/search-suggestions-system/', yt: 'https://www.youtube.com/watch?v=D4T2N0yAr20' },
     ]
   },
   {
@@ -1419,12 +1430,12 @@ const PATTERNS = [
     color: '#ff6584',
     ytLink: 'https://www.youtube.com/watch?v=cIBFEhD77b4',
     questions: [
-      { id: 'ts1', name: 'Course Schedule (Tasks Scheduling)', diff: 'medium', lc: 'https://leetcode.com/problems/course-schedule/', yt: 'https://www.youtube.com/watch?v=cIBFEhD77b4' },
-      { id: 'ts2', name: 'Course Schedule II (Tasks Scheduling Order)', diff: 'medium', lc: 'https://leetcode.com/problems/course-schedule-ii/' },
-      { id: 'ts3', name: 'All Course Schedules', diff: 'hard', lc: 'https://leetcode.com/problems/all-paths-source-target/' },
-      { id: 'ts4', name: 'Alien Dictionary', diff: 'hard', lc: 'https://leetcode.com/problems/alien-dictionary/' },
-      { id: 'ts5', name: 'Sequence Reconstruction', diff: 'hard', lc: 'https://leetcode.com/problems/sequence-reconstruction/' },
-      { id: 'ts6', name: 'Minimum Height Trees', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-height-trees/' },
+      { id: 'ts1', name: 'Course Schedule (Tasks Scheduling)', diff: 'medium', lc: 'https://leetcode.com/problems/course-schedule/', yt: 'https://www.youtube.com/watch?v=EgI5nU9etnU' },
+      { id: 'ts2', name: 'Course Schedule II (Tasks Scheduling Order)', diff: 'medium', lc: 'https://leetcode.com/problems/course-schedule-ii/', yt: 'https://www.youtube.com/watch?v=Akt3glAwyfY' },
+      { id: 'ts3', name: 'All Course Schedules', diff: 'hard', lc: 'https://leetcode.com/problems/all-paths-source-target/', yt: 'https://www.youtube.com/watch?v=cIBFEhD77b4' },
+      { id: 'ts4', name: 'Alien Dictionary', diff: 'hard', lc: 'https://leetcode.com/problems/alien-dictionary/', yt: 'https://www.youtube.com/watch?v=6kTZYvNNyps' },
+      { id: 'ts5', name: 'Sequence Reconstruction', diff: 'hard', lc: 'https://leetcode.com/problems/sequence-reconstruction/', yt: 'https://www.youtube.com/watch?v=cIBFEhD77b4' },
+      { id: 'ts6', name: 'Minimum Height Trees', diff: 'hard', lc: 'https://leetcode.com/problems/minimum-height-trees/', yt: 'https://www.youtube.com/watch?v=wQGQnyv_9hI' },
     ]
   },
   {
@@ -1432,23 +1443,23 @@ const PATTERNS = [
     color: '#43e97b',
     ytLink: 'https://www.youtube.com/watch?v=ayW5B2W9hfo',
     questions: [
-      { id: 'uf1', name: 'Redundant Connection', diff: 'medium', lc: 'https://leetcode.com/problems/redundant-connection/' },
-      { id: 'uf2', name: 'Redundant Connection II', diff: 'hard', lc: 'https://leetcode.com/problems/redundant-connection-ii/' },
-      { id: 'uf3', name: 'Number of Provinces', diff: 'medium', lc: 'https://leetcode.com/problems/number-of-provinces/' },
-      { id: 'uf4', name: 'Is Graph Bipartite?', diff: 'medium', lc: 'https://leetcode.com/problems/is-graph-bipartite/' },
-      { id: 'uf5', name: 'Path With Minimum Effort', diff: 'medium', lc: 'https://leetcode.com/problems/path-with-minimum-effort/' },
+      { id: 'uf1', name: 'Redundant Connection', diff: 'medium', lc: 'https://leetcode.com/problems/redundant-connection/', yt: 'https://www.youtube.com/watch?v=FXWRE4e0G8s' },
+      { id: 'uf2', name: 'Redundant Connection II', diff: 'hard', lc: 'https://leetcode.com/problems/redundant-connection-ii/', yt: 'https://www.youtube.com/watch?v=ayW5B2W9hfo' },
+      { id: 'uf3', name: 'Number of Provinces', diff: 'medium', lc: 'https://leetcode.com/problems/number-of-provinces/', yt: 'https://www.youtube.com/watch?v=ZGr5nX-Gi6Y' },
+      { id: 'uf4', name: 'Is Graph Bipartite?', diff: 'medium', lc: 'https://leetcode.com/problems/is-graph-bipartite/', yt: 'https://www.youtube.com/watch?v=mev55LTubBY' },
+      { id: 'uf5', name: 'Path With Minimum Effort', diff: 'medium', lc: 'https://leetcode.com/problems/path-with-minimum-effort/', yt: 'https://www.youtube.com/watch?v=XQlTTOo_yV0' },
     ]
   },
   {
     id: 'ordered-set', num: 26, name: 'Ordered Set',
     color: '#fdcb6e',
-    ytLink: 'https://www.youtube.com/results?search_query=ordered+set+DSA',
+    ytLink: 'https://www.youtube.com/results?search_query=ordered+set+DSA+leetcode',
     questions: [
-      { id: 'os1', name: 'Merge Similar Items', diff: 'easy', lc: 'https://leetcode.com/problems/merge-similar-items/' },
-      { id: 'os2', name: '132 Pattern', diff: 'medium', lc: 'https://leetcode.com/problems/132-pattern/' },
-      { id: 'os3', name: 'My Calendar I', diff: 'medium', lc: 'https://leetcode.com/problems/my-calendar-i/' },
-      { id: 'os4', name: 'My Calendar II', diff: 'medium', lc: 'https://leetcode.com/problems/my-calendar-ii/' },
-      { id: 'os5', name: 'My Calendar III', diff: 'hard', lc: 'https://leetcode.com/problems/my-calendar-iii/' },
+      { id: 'os1', name: 'Merge Similar Items', diff: 'easy', lc: 'https://leetcode.com/problems/merge-similar-items/', yt: 'https://www.youtube.com/watch?v=rvitJHLUMar' },
+      { id: 'os2', name: '132 Pattern', diff: 'medium', lc: 'https://leetcode.com/problems/132-pattern/', yt: 'https://www.youtube.com/watch?v=NmnJr9E3PeY' },
+      { id: 'os3', name: 'My Calendar I', diff: 'medium', lc: 'https://leetcode.com/problems/my-calendar-i/', yt: 'https://www.youtube.com/watch?v=fNCV-9_MDHE' },
+      { id: 'os4', name: 'My Calendar II', diff: 'medium', lc: 'https://leetcode.com/problems/my-calendar-ii/', yt: 'https://www.youtube.com/watch?v=fNCV-9_MDHE' },
+      { id: 'os5', name: 'My Calendar III', diff: 'hard', lc: 'https://leetcode.com/problems/my-calendar-iii/', yt: 'https://www.youtube.com/watch?v=fNCV-9_MDHE' },
     ]
   },
 ];
@@ -1655,9 +1666,15 @@ function renderPatterns() {
           <span class="q-name ${status === 'done' ? 'done' : ''}">${q.name}</span>
           <span class="q-diff ${q.diff}">${q.diff}</span>
           <div class="q-links">
-            ${q.lc ? `<a href="${q.lc}" target="_blank" class="q-link lc" onclick="event.stopPropagation()">LC</a>` : ''}
-            ${q.gfg ? `<a href="${q.gfg}" target="_blank" class="q-link gfg" onclick="event.stopPropagation()">GFG</a>` : ''}
-            ${q.yt ? `<a href="${q.yt}" target="_blank" class="q-link yt" onclick="event.stopPropagation()">▶</a>` : ''}
+            ${q.lc ? `<a href="${q.lc}" target="_blank" class="q-link lc" onclick="event.stopPropagation()" title="Solve on LeetCode">LC</a>` : ''}
+            ${q.gfg ? `<a href="${q.gfg}" target="_blank" class="q-link gfg" onclick="event.stopPropagation()" title="Solve on GFG">GFG</a>` : ''}
+            ${q.yt ? `<a href="${q.yt}" target="_blank" class="q-link yt-sol" onclick="event.stopPropagation()" title="Watch YouTube Solution">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              YT
+            </a>` : `<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(q.name+' leetcode solution')}" target="_blank" class="q-link yt-sol" onclick="event.stopPropagation()" title="Search YouTube Solution">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              YT
+            </a>`}
             <button class="q-link" style="background:rgba(255,255,255,0.05);color:var(--text3);border:1px solid var(--border);cursor:pointer;" onclick="openModal('${q.id}','${p.id}',event)">✎</button>
           </div>
         `;
@@ -2045,9 +2062,13 @@ function openModal(qId, patternId, event) {
   document.getElementById('modalTitle').textContent = q.name;
   document.getElementById('modalPattern').textContent = '📌 ' + pattern.name + ' · ' + q.diff.toUpperCase();
   document.getElementById('modalNotes').value = state.solved[qId]?.notes || '';
-  const solveLink = q.lc || q.gfg || q.yt || '#';
+  const solveLink = q.lc || q.gfg || '#';
   document.getElementById('modalSolveLink').href = solveLink;
-  document.getElementById('modalSolveLink').textContent = q.lc ? 'Solve on LeetCode →' : q.gfg ? 'Solve on GFG →' : 'Watch on YouTube →';
+  document.getElementById('modalSolveLink').textContent = q.lc ? 'Solve on LeetCode →' : q.gfg ? 'Solve on GFG →' : 'View Problem →';
+  // YouTube solution link
+  const ytLink = document.getElementById('modalYTLink');
+  const ytUrl = q.yt || `https://www.youtube.com/results?search_query=${encodeURIComponent(q.name + ' leetcode solution')}`;
+  ytLink.href = ytUrl;
   document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active-status'));
   const status = state.solved[qId]?.status;
   if (status === 'done') document.querySelectorAll('.status-btn')[0].classList.add('active-status');
